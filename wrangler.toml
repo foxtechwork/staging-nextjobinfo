@@ -1,5 +1,5 @@
 name = "nextjobinfo"
 compatibility_date = "2024-01-01"
 
-# ✅ Cloudflare Pages configuration
+#  Cloudflare Pages configuration
 pages_build_output_dir = "dist/client"
