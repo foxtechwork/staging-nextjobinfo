@@ -84,7 +84,17 @@ console.error = (...args: any[]) => {
 
 (global as any).localStorage = (global as any).window.localStorage;
 (global as any).sessionStorage = (global as any).window.sessionStorage;
-(global as any).navigator = (global as any).window.navigator;
+try {
+  if (!(global as any).navigator) {
+    Object.defineProperty(global, 'navigator', {
+      value: (global as any).window?.navigator || { userAgent: 'node' },
+      writable: false,
+      configurable: true,
+    });
+  }
+} catch {
+  // Ignore in Node 22+ where navigator is read-only
+}
 
 // Log file setup
 interface BuildLog {
