@@ -84,7 +84,20 @@ console.error = (...args: any[]) => {
 
 (global as any).localStorage = (global as any).window.localStorage;
 (global as any).sessionStorage = (global as any).window.sessionStorage;
-(global as any).navigator = (global as any).window.navigator;
+// Fix for Node.js 20+ / 22+ compatibility
+if (typeof (global as any).navigator === "undefined" || 
+    !Object.getOwnPropertyDescriptor(global, "navigator")?.writable) {
+  try {
+    Object.defineProperty(global, "navigator", {
+      value: (global as any).window?.navigator || { userAgent: "node" },
+      configurable: true,
+      writable: true,
+    });
+  } catch {
+    // Fallback (ignore if already defined and locked)
+  }
+}
+
 
 // Log file setup
 interface BuildLog {
