@@ -19,6 +19,7 @@ export type Database = {
           advt_no: string | null
           created_at: string | null
           education_tags: Json | null
+          EmployerSectorTag: Json | null
           exam_or_post_name: string
           experience_level_tags: Json | null
           is_active: boolean | null
@@ -28,14 +29,15 @@ export type Database = {
           job_posting_deadline_tags: Json | null
           job_type_tags: Json | null
           last_date: string | null
-          more_information: string | null
           page_link: string | null
-          post_date: string
+          post_date: string | null
           post_position_tags: Json | null
           qualification: string | null
           raw_html_1: string | null
           raw_html_2: string | null
           raw_html_3: string | null
+          raw_html_4: string | null
+          raw_html_5: string | null
           recruitment_board: string
           state: string | null
           total_posts: number | null
@@ -45,6 +47,7 @@ export type Database = {
           advt_no?: string | null
           created_at?: string | null
           education_tags?: Json | null
+          EmployerSectorTag?: Json | null
           exam_or_post_name: string
           experience_level_tags?: Json | null
           is_active?: boolean | null
@@ -54,14 +57,15 @@ export type Database = {
           job_posting_deadline_tags?: Json | null
           job_type_tags?: Json | null
           last_date?: string | null
-          more_information?: string | null
           page_link?: string | null
-          post_date: string
+          post_date?: string | null
           post_position_tags?: Json | null
           qualification?: string | null
           raw_html_1?: string | null
           raw_html_2?: string | null
           raw_html_3?: string | null
+          raw_html_4?: string | null
+          raw_html_5?: string | null
           recruitment_board: string
           state?: string | null
           total_posts?: number | null
@@ -71,6 +75,7 @@ export type Database = {
           advt_no?: string | null
           created_at?: string | null
           education_tags?: Json | null
+          EmployerSectorTag?: Json | null
           exam_or_post_name?: string
           experience_level_tags?: Json | null
           is_active?: boolean | null
@@ -80,14 +85,15 @@ export type Database = {
           job_posting_deadline_tags?: Json | null
           job_type_tags?: Json | null
           last_date?: string | null
-          more_information?: string | null
           page_link?: string | null
-          post_date?: string
+          post_date?: string | null
           post_position_tags?: Json | null
           qualification?: string | null
           raw_html_1?: string | null
           raw_html_2?: string | null
           raw_html_3?: string | null
+          raw_html_4?: string | null
+          raw_html_5?: string | null
           recruitment_board?: string
           state?: string | null
           total_posts?: number | null
@@ -191,6 +197,7 @@ export type Database = {
       preprocessing_job_data: {
         Row: {
           advt_no: string | null
+          check: string
           created_at: string | null
           data_extract: string | null
           education_tags: Json | null
@@ -206,12 +213,16 @@ export type Database = {
           job_posting_deadline_tags: Json | null
           job_type_tags: Json | null
           last_date: string | null
+          link_id: number
           location: string | null
           more_information: string[] | null
           page_link: string | null
           post_date: string | null
           post_position_tags: Json | null
+          prod_status: string
           qualification: string | null
+          raw_html_4: string | null
+          raw_html_5: string | null
           recruitment_board: string | null
           row_html_1: string | null
           row_html_2: string | null
@@ -219,10 +230,10 @@ export type Database = {
           source: string | null
           state: string | null
           total_vacancy: number | null
-          updated_at: string | null
         }
         Insert: {
           advt_no?: string | null
+          check?: string
           created_at?: string | null
           data_extract?: string | null
           education_tags?: Json | null
@@ -238,12 +249,16 @@ export type Database = {
           job_posting_deadline_tags?: Json | null
           job_type_tags?: Json | null
           last_date?: string | null
+          link_id?: number
           location?: string | null
           more_information?: string[] | null
           page_link?: string | null
           post_date?: string | null
           post_position_tags?: Json | null
+          prod_status?: string
           qualification?: string | null
+          raw_html_4?: string | null
+          raw_html_5?: string | null
           recruitment_board?: string | null
           row_html_1?: string | null
           row_html_2?: string | null
@@ -251,10 +266,10 @@ export type Database = {
           source?: string | null
           state?: string | null
           total_vacancy?: number | null
-          updated_at?: string | null
         }
         Update: {
           advt_no?: string | null
+          check?: string
           created_at?: string | null
           data_extract?: string | null
           education_tags?: Json | null
@@ -270,12 +285,16 @@ export type Database = {
           job_posting_deadline_tags?: Json | null
           job_type_tags?: Json | null
           last_date?: string | null
+          link_id?: number
           location?: string | null
           more_information?: string[] | null
           page_link?: string | null
           post_date?: string | null
           post_position_tags?: Json | null
+          prod_status?: string
           qualification?: string | null
+          raw_html_4?: string | null
+          raw_html_5?: string | null
           recruitment_board?: string | null
           row_html_1?: string | null
           row_html_2?: string | null
@@ -283,7 +302,6 @@ export type Database = {
           source?: string | null
           state?: string | null
           total_vacancy?: number | null
-          updated_at?: string | null
         }
         Relationships: []
       }

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useJobByPageLink, type Job, combineJobHtml } from '@/hooks/useJobs';
+import { useRelatedJobs } from '@/hooks/useRelatedJobs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Helmet } from 'react-helmet-async';
 import Header from '@/components/layout/Header';
@@ -14,6 +15,8 @@ import { Suspense, memo, useEffect } from 'react';
 import AdSenseAd from '@/components/ads/AdSenseAd';
 import { AdWrapper } from '@/components/ads/AdWrapper';
 import { ADS_CONFIG } from '@/config/ads';
+import MiniJobCard from '@/components/job/MiniJobCard';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 
 // Memoized components for performance
 const LoadingSkeleton = memo(() => (
@@ -35,6 +38,7 @@ export default function JobDetails() {
   const { pageLink } = useParams<{ pageLink: string }>();
   const location = useLocation();
   const { data: currentJob, isLoading: jobLoading, error: jobError } = useJobByPageLink(pageLink!) as { data: Job | undefined; isLoading: boolean; error: any };
+  const { data: relatedJobs, isLoading: relatedLoading } = useRelatedJobs(currentJob, 3);
 
   // Scroll to top instantly when navigating to this page
   useEffect(() => {
@@ -375,25 +379,62 @@ export default function JobDetails() {
               {/* Job Tags Section */}
               {(currentJob.education_tags || currentJob.job_type_tags || currentJob.experience_level_tags || currentJob.post_position_tags || currentJob.job_posting_deadline_tags) && (
                 <div className="mb-6 animate-fade-in">
-                  <div className="mb-3">
-                    <h2 className="text-lg md:text-xl font-semibold text-foreground tracking-tight">Job Categories & Tags</h2>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {[
-                      ...(Array.isArray(currentJob.education_tags) ? currentJob.education_tags : []),
-                      ...(Array.isArray(currentJob.job_type_tags) ? currentJob.job_type_tags : []),
-                      ...(Array.isArray(currentJob.experience_level_tags) ? currentJob.experience_level_tags : []),
-                      ...(Array.isArray(currentJob.post_position_tags) ? currentJob.post_position_tags : []),
-                      ...(Array.isArray(currentJob.job_posting_deadline_tags) ? currentJob.job_posting_deadline_tags : [])
-                    ].map((tag: any, index: number) => (
-                      <span 
-                        key={index} 
-                        className="bg-blue-50 text-blue-700 px-3 py-1.5 rounded-full text-sm font-normal border border-blue-200 hover:bg-blue-100 transition-colors"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  <Card className="border-l-4 border-l-primary shadow-sm">
+                    <CardContent className="p-4 md:p-6">
+                      <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                        <FileText className="h-5 w-5 text-primary" />
+                        Job Categories & Tags
+                      </h2>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          ...(Array.isArray(currentJob.education_tags) ? currentJob.education_tags : []),
+                          ...(Array.isArray(currentJob.job_type_tags) ? currentJob.job_type_tags : []),
+                          ...(Array.isArray(currentJob.experience_level_tags) ? currentJob.experience_level_tags : []),
+                          ...(Array.isArray(currentJob.post_position_tags) ? currentJob.post_position_tags : []),
+                          ...(Array.isArray(currentJob.job_posting_deadline_tags) ? currentJob.job_posting_deadline_tags : [])
+                        ].map((tag: any, index: number) => (
+                          <Badge 
+                            key={index} 
+                            variant="secondary"
+                            className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors px-3 py-1.5 text-sm"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              )}
+
+              {/* Related Jobs Section - Compact Carousel */}
+              {relatedJobs && relatedJobs.length > 0 && (
+                <div className="mb-6 animate-fade-in">
+                  <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
+                    <Building className="h-5 w-5 text-accent" />
+                    Related Jobs {currentJob.Is_All_India ? '(All India)' : currentJob.state ? `(${currentJob.state})` : ''}
+                  </h2>
+                  
+                  <Carousel
+                    opts={{
+                      align: "start",
+                      loop: true,
+                    }}
+                    className="w-full"
+                  >
+                    <CarouselContent className="-ml-2 md:-ml-3">
+                      {relatedJobs.map((job) => (
+                        <CarouselItem key={job.job_id} className="pl-2 md:pl-3 basis-full sm:basis-1/2 lg:basis-1/3">
+                          <MiniJobCard
+                            pageLink={job.page_link || ''}
+                            title={job.exam_or_post_name}
+                            organization={job.recruitment_board}
+                            lastDate={job.last_date ? formatDate(job.last_date) : 'Check Notification'}
+                          />
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                  </Carousel>
                 </div>
               )}
 
