@@ -3,6 +3,7 @@ import { Link, useSearchParams, useNavigate, useLocation } from "react-router-do
 import { Search, Briefcase, Users, Clock, TrendingUp, Calendar, MapPin, Building, GraduationCap } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -166,7 +167,12 @@ export default function Home() {
             <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 sm:p-4 md:p-6 max-w-3xl mx-auto">
               <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
                 <div className="sm:col-span-2">
+                  <Label htmlFor="hero-search-input" className="sr-only">
+                    Search for government jobs by title, location, or organization
+                  </Label>
                   <Input
+                    id="hero-search-input"
+                    type="search"
                     placeholder="Search jobs..."
                     value={searchQuery}
                     onChange={(e) => {
@@ -184,18 +190,35 @@ export default function Home() {
                       }
                     }}
                     className="bg-white/20 border-white/30 text-white placeholder:text-white/70 h-10 sm:h-11"
+                    aria-describedby="search-hint search-description"
                   />
+                  <span id="search-hint" className="sr-only">Press Enter to search</span>
+                  <span id="search-description" className="sr-only">
+                    Enter keywords to find government jobs by title, location, or organization name
+                  </span>
                 </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="bg-white/20 border-white/30 text-white h-10 sm:h-11">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jobCategories.map((category) => (
-                      <SelectItem key={category} value={category}>{category}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div>
+                  <Label htmlFor="hero-category-select" className="sr-only">
+                    Filter jobs by category
+                  </Label>
+                  <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                    <SelectTrigger 
+                      id="hero-category-select"
+                      className="bg-white/20 border-white/30 text-white h-10 sm:h-11" 
+                      aria-describedby="category-description"
+                    >
+                      <SelectValue placeholder="Category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobCategories.map((category) => (
+                        <SelectItem key={category} value={category}>{category}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <span id="category-description" className="sr-only">
+                    Select a category to filter government jobs by type such as Banking, Railway, or Teaching
+                  </span>
+                </div>
                 <Button 
                   className="bg-white text-primary hover:bg-white/90 h-10 sm:h-11"
                   type="button"
@@ -220,8 +243,7 @@ export default function Home() {
 
 
       {/* Main Content - Custom Layout with Specific Proportions */}
-      <section className="py-3 sm:py-4 md:py-6" role="main" aria-label="Job listings">
-        <h2 className="sr-only">All India Government Jobs</h2>
+      <main id="main-content" className="py-3 sm:py-4 md:py-6">
         <div className="w-full">
           <div className="flex">
             {/* Left Margin - 2% */}
@@ -286,7 +308,8 @@ export default function Home() {
               <Card className="jobs-results-section">
                 <CardContent className="p-0">
                   {jobsLoading ? (
-                    <div className="p-3 sm:p-4 space-y-3">
+                    <div className="p-3 sm:p-4 space-y-3" aria-busy="true" aria-live="polite">
+                      <p className="sr-only">Loading job listings</p>
                       {[...Array(5)].map((_, i) => (
                         <div key={i} className="flex items-center space-x-3">
                           <Skeleton className="h-10 w-10 rounded-full" />
@@ -299,7 +322,7 @@ export default function Home() {
                       ))}
                     </div>
                   ) : filteredJobs.length === 0 ? (
-                    <div className="p-6 text-center">
+                    <div className="p-6 text-center" role="alert">
                       <p className="text-muted-foreground">No jobs found matching your criteria.</p>
                     </div>
                   ) : (
@@ -457,8 +480,8 @@ export default function Home() {
                 </div>
               </>
             )}
-                </CardContent>
-              </Card>
+              </CardContent>
+            </Card>
             </div>
 
             {/* Right Sidebar - 17% */}
@@ -470,7 +493,7 @@ export default function Home() {
             <div className="hidden xl:block w-[2%] flex-shrink-0"></div>
           </div>
         </div>
-      </section>
+      </main>
     </div>
   );
 }

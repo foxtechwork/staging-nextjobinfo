@@ -133,6 +133,27 @@ All colors MUST be HSL.
   }
 }
 
+/* Skip to main content - Accessibility */
+.skip-to-main {
+  position: absolute;
+  left: -9999px;
+  z-index: 9999;
+  padding: 1rem 1.5rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  text-decoration: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.skip-to-main:focus {
+  left: 1rem;
+  top: 1rem;
+  outline: 3px solid hsl(var(--ring));
+  outline-offset: 2px;
+}
+
 @layer base {
   * {
     @apply border-border;
@@ -142,6 +163,37 @@ All colors MUST be HSL.
     @apply bg-background text-foreground font-inter text-base;
     font-size: 16px;
     line-height: 1.6;
+  }
+  
+  /* Enhanced focus indicators - WCAG 2.4.7 */
+  *:focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  
+  button:focus-visible,
+  a:focus-visible {
+    outline: 3px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  
+  /* Screen reader only - Accessibility */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+  
+  /* Improved link visibility */
+  a {
+    text-underline-offset: 0.2em;
   }
 
   /* Enhanced typography scale */
