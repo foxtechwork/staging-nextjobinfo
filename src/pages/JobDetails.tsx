@@ -233,11 +233,11 @@ export default function JobDetails() {
 
     return (
       <Helmet>
+        {/* Primary meta tags - will override index.html defaults */}
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="keywords" content={comprehensiveKeywords} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
-        <meta name="author" content="Next Job Info" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
@@ -391,8 +391,16 @@ export default function JobDetails() {
                       <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         Qualification Required
                       </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground break-words">
+                      {/* Mobile: Full text */}
+                      <div className="text-lg md:text-xl font-bold text-foreground break-words md:hidden">
                         {currentJob.qualification}
+                      </div>
+                      {/* Desktop: Truncated to 100 chars if needed */}
+                      <div className="hidden md:block text-lg md:text-xl font-bold text-foreground break-words">
+                        {currentJob.qualification.length > 100 
+                          ? `${currentJob.qualification.substring(0, 100)} and more...`
+                          : currentJob.qualification
+                        }
                       </div>
                     </CardContent>
                   </Card>

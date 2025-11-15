@@ -55,6 +55,18 @@ echo ""
 echo "🎨 Step 5: Prerendering pages..."
 tsx scripts/prerender.ts
 
+if [ $? -ne 0 ]; then
+    echo "❌ Prerendering failed"
+    exit 1
+fi
+
+echo "✅ Pages prerendered successfully"
+echo ""
+
+# Step 6: Generate final sitemap from SSG build log
+echo "🗺️  Step 6: Generating final sitemap from SSG build log..."
+tsx scripts/generate-sitemap.ts
+
 if [ $? -eq 0 ]; then
     echo ""
     echo "✅ Static site generated successfully!"
@@ -64,6 +76,6 @@ if [ $? -eq 0 ]; then
     echo "  1. Preview: npx serve dist/client"
     echo "  2. Deploy: Upload dist/client/ folder to your hosting service"
 else
-    echo "❌ Prerendering failed"
+    echo "❌ Sitemap generation failed"
     exit 1
 fi
