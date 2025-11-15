@@ -17,6 +17,7 @@ import { AdWrapper } from '@/components/ads/AdWrapper';
 import { ADS_CONFIG } from '@/config/ads';
 import MiniJobCard from '@/components/job/MiniJobCard';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 
 // Memoized components for performance
 const LoadingSkeleton = memo(() => (
@@ -147,24 +148,85 @@ export default function JobDetails() {
     });
   };
 
-  // Generate dynamic meta tags for SEO
+  // Generate dynamic meta tags for SEO with comprehensive keyword strategy
   const generateMetaTags = () => {
     if (!currentJob) return null;
 
-    const title = `${currentJob.exam_or_post_name} - ${currentJob.recruitment_board} | Next Job Info`;
-    const description = `Apply for ${currentJob.exam_or_post_name} in ${currentJob.state || 'All India'}. ${currentJob.qualification || 'Government Job'} - Last Date: ${currentJob.last_date ? formatDate(currentJob.last_date) : 'Check Official Notice'}. Total Posts: ${currentJob.total_posts || 'Multiple'}.`;
-    const keywords = [
-      currentJob.exam_or_post_name?.toLowerCase(),
-      currentJob.recruitment_board?.toLowerCase(),
-      currentJob.state?.toLowerCase(),
+    const currentYear = new Date().getFullYear();
+    const recruitmentBoard = currentJob.recruitment_board || 'Government';
+    const state = currentJob.state || 'All India';
+    const totalVacancies = currentJob.total_posts || 'Multiple';
+    const qualification = currentJob.qualification || 'Various';
+    const jobCategory = (Array.isArray(currentJob.job_area_tags) && currentJob.job_area_tags.length > 0) 
+      ? currentJob.job_area_tags[0] 
+      : 'Government';
+    const lastDate = currentJob.last_date ? formatDate(currentJob.last_date) : 'Check Official Notice';
+
+    // Comprehensive SEO Keywords following the specified format
+    const comprehensiveKeywords = [
+      // Primary recruitment keywords
+      `${recruitmentBoard} recruitment ${currentYear}`,
+      `${recruitmentBoard} notification ${currentYear}`,
+      `${recruitmentBoard} vacancy ${currentYear}`,
+      `apply online ${recruitmentBoard}`,
+      `${recruitmentBoard} jobs in ${state}`,
+      `${recruitmentBoard} official notification`,
+      
+      // State-specific keywords
+      `government jobs in ${state}`,
+      `${state} vacancy update ${currentYear}`,
+      `${qualification} govt jobs in ${state}`,
+      `${jobCategory} recruitment ${currentYear}`,
+      `latest govt jobs ${state}`,
+      `sarkari job ${state} ${currentYear}`,
+      `new recruitment in ${state}`,
+      `apply online ${state} jobs`,
+      `upcoming government jobs ${state}`,
+      
+      // Application and deadline keywords
+      `${recruitmentBoard} last date to apply`,
+      `online form ${recruitmentBoard}`,
+      `${state} government job vacancy`,
+      
+      // Qualification-based keywords
+      `freshers jobs ${state}`,
+      `diploma govt jobs ${state}`,
+      `12th pass jobs ${state} govt`,
+      `degree govt jobs in ${state}`,
+      `jobs for graduates ${state}`,
+      `jobs for 10+2 pass ${state}`,
+      
+      // Category-specific keywords
+      `railway jobs ${state} ${currentYear}`,
+      `latest notification ${recruitmentBoard}`,
+      `${state} govt notification`,
+      `central govt jobs ${state}`,
+      `RRB jobs ${state} ${currentYear}`,
+      `IT jobs ${state} govt`,
+      `technical jobs ${state}`,
+      `non-technical jobs ${state}`,
+      
+      // General and popular search terms
+      `sarkari naukri in ${state}`,
+      `govt recruitment board ${currentYear}`,
+      `job openings in ${state}`,
+      `${currentJob.exam_or_post_name?.toLowerCase()}`,
       'government jobs',
       'sarkari naukri',
       'job vacancy',
       'recruitment',
       'apply online',
+      
+      // Education and job type tags
       ...(Array.isArray(currentJob.education_tags) ? currentJob.education_tags : []),
       ...(Array.isArray(currentJob.job_type_tags) ? currentJob.job_type_tags : []),
     ].filter(Boolean).join(', ');
+
+    // Meta Title following exact format
+    const title = `${recruitmentBoard} Recruitment ${currentYear} | ${state} Govt Jobs | ${totalVacancies} Posts – Apply Before ${lastDate} | nextjobinfo.com`;
+
+    // Meta Description following exact narrative format
+    const description = `Looking for the latest ${recruitmentBoard} Recruitment ${currentYear}? Explore complete details for ${state} candidates including total vacancies (${totalVacancies}), required qualifications (${qualification}), job category (${jobCategory}), selection process, and step-by-step application guide. Don't miss the last date to apply: ${lastDate}. Stay updated with verified, real-time government job notifications and apply online now with nextjobinfo.com`;
 
     const canonicalUrl = `https://nextjobinfo.com/job/${pageLink}`;
     const imageUrl = `https://nextjobinfo.com/api/og-image?title=${encodeURIComponent(currentJob.exam_or_post_name)}&org=${encodeURIComponent(currentJob.recruitment_board)}`;
@@ -173,7 +235,7 @@ export default function JobDetails() {
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="keywords" content={keywords} />
+        <meta name="keywords" content={comprehensiveKeywords} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="author" content="Next Job Info" />
         
@@ -420,6 +482,17 @@ export default function JobDetails() {
                       align: "start",
                       loop: true,
                     }}
+                    plugins={
+                      typeof window !== 'undefined' && window.innerWidth < 768
+                        ? [
+                            Autoplay({
+                              delay: 3000,
+                              stopOnInteraction: true,
+                              stopOnMouseEnter: true,
+                            }),
+                          ]
+                        : []
+                    }
                     className="w-full"
                   >
                     <CarouselContent className="-ml-2 md:-ml-3">

@@ -400,10 +400,10 @@ export default function CategoryJobs() {
 
                       {/* Desktop Table View */}
                       <div className="hidden md:block">
-                        <Table className="text-sm">
+                        <Table className="table-fixed w-full">
                           <TableHeader>
                             <TableRow className="bg-muted/50">
-                              <TableHead className="text-left px-4 py-4 text-sm font-semibold">Job Title & Organization</TableHead>
+                              <TableHead className="text-left px-4 py-4 text-sm font-semibold w-[40%]">Job Title & Organization</TableHead>
                               <TableHead className="text-center px-2 py-4 text-sm font-semibold w-[12%]">Recruitment Board</TableHead>
                               <TableHead className="text-center px-2 py-4 text-sm font-semibold w-[12%]">Qualification</TableHead>
                               <TableHead className="text-center px-2 py-4 text-sm font-semibold w-[12%]">Location</TableHead>
@@ -414,18 +414,18 @@ export default function CategoryJobs() {
                           <TableBody>
                             {filteredJobs.map((job) => (
                               <TableRow key={job.job_id} className="hover:bg-muted/30 transition-colors">
-                                <TableCell className="py-4 px-4">
+                                <TableCell className="py-4 px-4 w-[40%]">
                                   <div className="space-y-2">
                                     <Link to={`/job/${job.page_link || job.job_id}`}>
-                                      <h4 className="font-semibold text-foreground text-sm leading-tight hover:text-primary transition-colors cursor-pointer">
+                                      <h4 className="font-semibold text-foreground text-sm leading-tight hover:text-primary transition-colors cursor-pointer break-words">
                                         {job.exam_or_post_name}
                                       </h4>
                                     </Link>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                      <Calendar className="h-4 w-4" aria-hidden="true" />
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                                      <Calendar className="h-4 w-4 flex-shrink-0" aria-hidden="true" />
                                       <span className="font-medium">Posted: {formatDate(job.post_date, job.updated_at)}</span>
                                       {job.advt_no && (
-                                        <span className="font-semibold text-primary ml-2">
+                                        <span className="font-semibold text-primary ml-2 truncate">
                                           {job.advt_no}
                                         </span>
                                       )}
@@ -445,7 +445,7 @@ export default function CategoryJobs() {
                                 <TableCell className="text-center py-4 px-2">
                                   <div className="flex items-center justify-center gap-1">
                                     <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" aria-hidden="true" />
-                                    <span className="text-sm">
+                                    <span className="text-sm break-words">
                                       {job.state === "All India" ? "All India" : job.state || "All India"}
                                     </span>
                                   </div>
@@ -455,12 +455,13 @@ export default function CategoryJobs() {
                                     <div className={`font-bold text-sm ${getDateColor(job.last_date)}`}>
                                       {job.last_date ? formatDate(job.last_date) : "Open"}
                                     </div>
+                                    <div className="text-xs text-muted-foreground">Apply Before</div>
                                   </div>
                                 </TableCell>
                                 <TableCell className="text-center py-4 px-2">
                                   <Link to={`/job/${job.page_link || job.job_id}`}>
-                                    <Button variant="outline" size="sm" className="whitespace-nowrap h-8">
-                                      View Details
+                                    <Button variant="default" size="sm" className="shadow-sm whitespace-nowrap">
+                                      Details
                                     </Button>
                                   </Link>
                                 </TableCell>
