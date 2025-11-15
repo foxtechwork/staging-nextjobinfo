@@ -321,9 +321,13 @@ export default function Home() {
                         </div>
                       ))}
                     </div>
-                  ) : filteredJobs.length === 0 ? (
+                  ) : filteredJobs.length === 0 && (activeSearchQuery || selectedCategory !== "All India Govt Jobs") ? (
                     <div className="p-6 text-center" role="alert">
                       <p className="text-muted-foreground">No jobs found matching your criteria.</p>
+                    </div>
+                  ) : filteredJobs.length === 0 ? (
+                    <div className="p-6 text-center">
+                      <p className="text-muted-foreground">Loading jobs...</p>
                     </div>
                   ) : (
               <>
