@@ -148,35 +148,96 @@ export default function JobDetails() {
     });
   };
 
-  // Generate dynamic meta tags for SEO
+  // Generate dynamic meta tags for SEO with comprehensive keyword strategy
   const generateMetaTags = () => {
     if (!currentJob) return null;
 
-    const title = `${currentJob.exam_or_post_name} - ${currentJob.recruitment_board} | Next Job Info`;
-    const description = `Apply for ${currentJob.exam_or_post_name} in ${currentJob.state || 'All India'}. ${currentJob.qualification || 'Government Job'} - Last Date: ${currentJob.last_date ? formatDate(currentJob.last_date) : 'Check Official Notice'}. Total Posts: ${currentJob.total_posts || 'Multiple'}.`;
-    const keywords = [
-      currentJob.exam_or_post_name?.toLowerCase(),
-      currentJob.recruitment_board?.toLowerCase(),
-      currentJob.state?.toLowerCase(),
+    const currentYear = new Date().getFullYear();
+    const recruitmentBoard = currentJob.recruitment_board || 'Government';
+    const state = currentJob.state || 'All India';
+    const totalVacancies = currentJob.total_posts || 'Multiple';
+    const qualification = currentJob.qualification || 'Various';
+    const jobCategory = (Array.isArray(currentJob.job_area_tags) && currentJob.job_area_tags.length > 0) 
+      ? currentJob.job_area_tags[0] 
+      : 'Government';
+    const lastDate = currentJob.last_date ? formatDate(currentJob.last_date) : 'Check Official Notice';
+
+    // Comprehensive SEO Keywords following the specified format
+    const comprehensiveKeywords = [
+      // Primary recruitment keywords
+      `${recruitmentBoard} recruitment ${currentYear}`,
+      `${recruitmentBoard} notification ${currentYear}`,
+      `${recruitmentBoard} vacancy ${currentYear}`,
+      `apply online ${recruitmentBoard}`,
+      `${recruitmentBoard} jobs in ${state}`,
+      `${recruitmentBoard} official notification`,
+      
+      // State-specific keywords
+      `government jobs in ${state}`,
+      `${state} vacancy update ${currentYear}`,
+      `${qualification} govt jobs in ${state}`,
+      `${jobCategory} recruitment ${currentYear}`,
+      `latest govt jobs ${state}`,
+      `sarkari job ${state} ${currentYear}`,
+      `new recruitment in ${state}`,
+      `apply online ${state} jobs`,
+      `upcoming government jobs ${state}`,
+      
+      // Application and deadline keywords
+      `${recruitmentBoard} last date to apply`,
+      `online form ${recruitmentBoard}`,
+      `${state} government job vacancy`,
+      
+      // Qualification-based keywords
+      `freshers jobs ${state}`,
+      `diploma govt jobs ${state}`,
+      `12th pass jobs ${state} govt`,
+      `degree govt jobs in ${state}`,
+      `jobs for graduates ${state}`,
+      `jobs for 10+2 pass ${state}`,
+      
+      // Category-specific keywords
+      `railway jobs ${state} ${currentYear}`,
+      `latest notification ${recruitmentBoard}`,
+      `${state} govt notification`,
+      `central govt jobs ${state}`,
+      `RRB jobs ${state} ${currentYear}`,
+      `IT jobs ${state} govt`,
+      `technical jobs ${state}`,
+      `non-technical jobs ${state}`,
+      
+      // General and popular search terms
+      `sarkari naukri in ${state}`,
+      `govt recruitment board ${currentYear}`,
+      `job openings in ${state}`,
+      `${currentJob.exam_or_post_name?.toLowerCase()}`,
       'government jobs',
       'sarkari naukri',
       'job vacancy',
       'recruitment',
       'apply online',
+      
+      // Education and job type tags
       ...(Array.isArray(currentJob.education_tags) ? currentJob.education_tags : []),
       ...(Array.isArray(currentJob.job_type_tags) ? currentJob.job_type_tags : []),
     ].filter(Boolean).join(', ');
 
+    // Meta Title following exact format
+    const title = `${recruitmentBoard} Recruitment ${currentYear} | ${state} Govt Jobs | ${totalVacancies} Posts – Apply Before ${lastDate} | nextjobinfo.com`;
+
+    // Meta Description following exact narrative format
+    const description = `Looking for the latest ${recruitmentBoard} Recruitment ${currentYear}? Explore complete details for ${state} candidates including total vacancies (${totalVacancies}), required qualifications (${qualification}), job category (${jobCategory}), selection process, and step-by-step application guide. Don't miss the last date to apply: ${lastDate}. Stay updated with verified, real-time government job notifications and apply online now with nextjobinfo.com`;
+
     const canonicalUrl = `https://nextjobinfo.com/job/${pageLink}`;
-    const imageUrl = `https://nextjobinfo.com/api/og-image?title=${encodeURIComponent(currentJob.exam_or_post_name)}&org=${encodeURIComponent(currentJob.recruitment_board)}`;
+    const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp';
 
     return (
       <Helmet>
+        {/* Primary meta tags - will override index.html defaults */}
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="keywords" content={keywords} />
+        <meta name="keywords" content={comprehensiveKeywords} />
         <meta name="robots" content="index, follow, max-image-preview:large" />
-        <meta name="author" content="Next Job Info" />
         
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="article" />
@@ -184,14 +245,16 @@ export default function JobDetails() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Next Job Info" />
         
         {/* Twitter */}
-        <meta property="twitter:card" content="share-jobs-with-nextjobinfo" />
-        <meta property="twitter:url" content={canonicalUrl} />
-        <meta property="twitter:title" content={title} />
-        <meta property="twitter:description" content={description} />
-        <meta property="twitter:image" content={imageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={canonicalUrl} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
         
         {/* Additional SEO */}
         <meta name="format-detection" content="telephone=no" />
@@ -330,8 +393,16 @@ export default function JobDetails() {
                       <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                         Qualification Required
                       </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground break-words">
+                      {/* Mobile: Full text */}
+                      <div className="text-lg md:text-xl font-bold text-foreground break-words md:hidden">
                         {currentJob.qualification}
+                      </div>
+                      {/* Desktop: Truncated to 100 chars if needed */}
+                      <div className="hidden md:block text-lg md:text-xl font-bold text-foreground break-words">
+                        {currentJob.qualification.length > 100 
+                          ? `${currentJob.qualification.substring(0, 100)} and more...`
+                          : currentJob.qualification
+                        }
                       </div>
                     </CardContent>
                   </Card>

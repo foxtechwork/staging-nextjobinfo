@@ -14,15 +14,30 @@ async function generateSitemap() {
   const baseUrl = 'https://www.nextjobinfo.com';
   const today = new Date().toISOString().split('T')[0];
   
-  // Load routes from static-routes.json
+  // Try to load routes from ssg-build.log.json first (most accurate), fallback to static-routes.json
+  let routes: string[] = [];
+  const ssgLogPath = path.resolve(process.cwd(), 'ssg-build.log.json');
   const routesPath = path.resolve(process.cwd(), 'static-routes.json');
-  if (!fs.existsSync(routesPath)) {
-    console.error('❌ static-routes.json not found. Run npm run generate-routes first.');
+  
+  if (fs.existsSync(ssgLogPath)) {
+    console.log('📋 Reading routes from ssg-build.log.json...');
+    const ssgLog = JSON.parse(fs.readFileSync(ssgLogPath, 'utf-8'));
+    routes = ssgLog.generated || [];
+    console.log(`📍 Found ${routes.length} generated routes from SSG build`);
+  } else if (fs.existsSync(routesPath)) {
+    console.log('📋 Reading routes from static-routes.json...');
+    routes = JSON.parse(fs.readFileSync(routesPath, 'utf-8'));
+    console.log(`📍 Found ${routes.length} routes from static-routes.json`);
+  } else {
+    console.error('❌ Neither ssg-build.log.json nor static-routes.json found.');
+    console.error('   Run npm run generate-routes or npm run build:ssg first.');
     process.exit(1);
   }
   
-  const routes: string[] = JSON.parse(fs.readFileSync(routesPath, 'utf-8'));
-  console.log(`📍 Found ${routes.length} routes`);
+  if (routes.length === 0) {
+    console.error('❌ No routes found to generate sitemap.');
+    process.exit(1);
+  }
   
   // Create sitemap URLs with priorities and change frequencies
   const urls: SitemapUrl[] = routes.map(route => {

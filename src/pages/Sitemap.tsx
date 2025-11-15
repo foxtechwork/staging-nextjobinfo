@@ -117,7 +117,7 @@ const Sitemap = () => {
           </div>
 
           <div className="mt-8 text-center text-sm text-muted-foreground">
-            <p>This sitemap is updated regularly. Last updated: January 2024</p>
+            <p>This sitemap is updated regularly. Last updated: January 2025</p>
           </div>
         </div>
       </main>
