@@ -229,7 +229,7 @@ export default function JobDetails() {
     const description = `Looking for the latest ${recruitmentBoard} Recruitment ${currentYear}? Explore complete details for ${state} candidates including total vacancies (${totalVacancies}), required qualifications (${qualification}), job category (${jobCategory}), selection process, and step-by-step application guide. Don't miss the last date to apply: ${lastDate}. Stay updated with verified, real-time government job notifications and apply online now with nextjobinfo.com`;
 
     const canonicalUrl = `https://nextjobinfo.com/job/${pageLink}`;
-    const imageUrl = `https://nextjobinfo.com/api/og-image?title=${encodeURIComponent(currentJob.exam_or_post_name)}&org=${encodeURIComponent(currentJob.recruitment_board)}`;
+    const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp';
 
     return (
       <Helmet>
@@ -245,14 +245,16 @@ export default function JobDetails() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={imageUrl} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Next Job Info" />
         
         {/* Twitter */}
-        <meta property="twitter:card" content="share-jobs-with-nextjobinfo" />
-        <meta property="twitter:url" content={canonicalUrl} />
-        <meta property="twitter:title" content={title} />
-        <meta property="twitter:description" content={description} />
-        <meta property="twitter:image" content={imageUrl} />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={canonicalUrl} />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
         
         {/* Additional SEO */}
         <meta name="format-detection" content="telephone=no" />

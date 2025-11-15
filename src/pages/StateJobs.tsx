@@ -131,12 +131,15 @@ export default function StateJobs() {
         <meta property="og:url" content={`${window.location.origin}/state-jobs/${stateCode}`} />
         <meta property="og:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri`} />
         <meta property="og:description" content={`Find ${filteredJobs.length}+ latest ${stateName} government jobs. Apply online for state govt vacancies.`} />
-        <meta property="og:image" content={`${window.location.origin}/assets/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${stateName} Govt Jobs 2025`} />
         <meta name="twitter:description" content={`${filteredJobs.length}+ latest ${stateName} government jobs`} />
+        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
         
         {/* CollectionPage Schema with JobPosting */}
         <script type="application/ld+json">

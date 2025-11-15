@@ -184,11 +184,14 @@ export default function CategoryJobs() {
         <meta property="og:url" content={`${window.location.origin}/category/${category}`} />
         <meta property="og:title" content={`${categoryName} Jobs 2025 - Latest Sarkari Naukri`} />
         <meta property="og:description" content={`${filteredJobs.length}+ latest ${categoryName} government jobs`} />
-        <meta property="og:image" content={`${window.location.origin}/assets/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={`${categoryName} Jobs 2025`} />
+        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
         
         {/* CollectionPage Schema */}
         <script type="application/ld+json">
