@@ -15,20 +15,32 @@ export function HydrateData({ children }: { children: ReactNode }) {
     if (typeof window !== 'undefined' && window.__SSG_DATA__) {
       const data = window.__SSG_DATA__;
 
-      // Hydrate news data
+      // Hydrate news data with staleTime
       if (data.news) {
         queryClient.setQueryData(['news'], data.news);
+        queryClient.setQueryDefaults(['news'], {
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
       }
 
-      // Hydrate stats data
+      // Hydrate stats data with staleTime
       if (data.stats) {
         queryClient.setQueryData(['jobs-stats'], data.stats);
+        queryClient.setQueryDefaults(['jobs-stats'], {
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
       }
 
       // Hydrate jobs data with comprehensive query key coverage
       if (data.jobs) {
-        // Set base jobs data
+        // Set base jobs data with staleTime to prevent refetch
         queryClient.setQueryData(['jobs'], data.jobs);
+        queryClient.setQueryDefaults(['jobs'], {
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
         
         // Set for various search query patterns to ensure data is available
         // regardless of how the page is accessed (direct URL or navigation)
@@ -70,6 +82,10 @@ export function HydrateData({ children }: { children: ReactNode }) {
       if (data.currentJob) {
         const pageLink = data.currentJob.page_link;
         queryClient.setQueryData(['job-by-page-link', pageLink], data.currentJob);
+        queryClient.setQueryDefaults(['job-by-page-link'], {
+          staleTime: Infinity,
+          gcTime: Infinity,
+        });
       }
     }
   }, [queryClient]);

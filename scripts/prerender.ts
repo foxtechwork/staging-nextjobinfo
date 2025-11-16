@@ -338,7 +338,26 @@ async function prerender() {
           const dataScript = `<script>window.__SSG_DATA__=${JSON.stringify(data)};</script>`;
           
           // Inject rendered HTML, Helmet tags, and data
+          // Remove ALL default meta tags to prevent duplicates and ensure page-specific tags are used
           let finalHtml = template
+            // Remove default title
+            .replace(/<title[^>]*>.*?<\/title>/g, '')
+            // Remove default description
+            .replace(/<meta\s+name="description"[^>]*>/gi, '')
+            // Remove default Open Graph tags
+            .replace(/<meta\s+property="og:title"[^>]*>/gi, '')
+            .replace(/<meta\s+property="og:description"[^>]*>/gi, '')
+            .replace(/<meta\s+property="og:url"[^>]*>/gi, '')
+            .replace(/<meta\s+property="og:image"[^>]*>/gi, '')
+            .replace(/<meta\s+property="og:image:width"[^>]*>/gi, '')
+            .replace(/<meta\s+property="og:image:height"[^>]*>/gi, '')
+            // Remove default Twitter Card tags (note: Twitter uses name, not property)
+            .replace(/<meta\s+name="twitter:title"[^>]*>/gi, '')
+            .replace(/<meta\s+name="twitter:description"[^>]*>/gi, '')
+            .replace(/<meta\s+name="twitter:url"[^>]*>/gi, '')
+            .replace(/<meta\s+name="twitter:image"[^>]*>/gi, '')
+            .replace(/<meta\s+name="twitter:card"[^>]*>/gi, '')
+            // Now inject helmet data (which includes page-specific tags)
             .replace('<!--app-head-->', helmet.title + helmet.meta + helmet.link + helmet.script + dataScript)
             .replace('<!--app-html-->', html);
           

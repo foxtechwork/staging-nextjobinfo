@@ -20,7 +20,7 @@ The image already exists at `public/share-jobs-with-nextjobinfo.png`, which is t
 
 ### Verification
 - ✅ Image exists: `public/share-jobs-with-nextjobinfo.png`
-- ✅ Correct reference in `index.html` (line 55): `content="/share-jobs-with-nextjobinfo.png"`
+- ✅ Correct reference in `index.html` (line 55): `content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png"`
 - ✅ Correct reference in `JobDetails.tsx` (line 232): `const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.png'`
 - ✅ Used in OG tags (lines 247, 257): `<meta property="og:image" content={imageUrl} />`
 
@@ -51,7 +51,7 @@ Job detail pages were showing default OG title "Latest Govt Jobs 2025 - NextJobI
    <meta property="og:url" content="https://nextjobinfo.com/" />
    <meta property="og:title" content="Latest Govt Jobs 2025 - Next Job Info | Sarkari Naukri" />
    <meta property="og:description" content="Find latest govt jobs 2025..." />
-   <meta property="og:image" content="/share-jobs-with-nextjobinfo.png" />
+   <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
    <meta name="twitter:card" content="summary_large_image" />
    ```
 

@@ -1,11 +1,11 @@
 #!/bin/bash
 
-echo "🚀 Starting Custom SSG Build..."
+echo "🚀 Starting Complete SSG Build with Sitemap Generation..."
 echo ""
 
 # Step 1: Generate routes
 echo "📍 Step 1: Generating routes from database..."
-tsx scripts/generate-routes.ts
+npm run generate-routes
 
 if [ ! -f "static-routes.json" ]; then
     echo "❌ Error: static-routes.json not generated"
@@ -15,21 +15,9 @@ fi
 echo "✅ Routes generated successfully"
 echo ""
 
-# Step 2: Generate sitemap
-echo "🗺️  Step 2: Generating sitemap.xml..."
-tsx scripts/generate-sitemap.ts
-
-if [ ! -f "public/sitemap.xml" ]; then
-    echo "❌ Error: sitemap.xml not generated"
-    exit 1
-fi
-
-echo "✅ Sitemap generated successfully"
-echo ""
-
-# Step 3: Build client
-echo "🏗️  Step 3: Building client..."
-vite build --outDir dist/client
+# Step 2: Build client
+echo "🏗️  Step 2: Building client..."
+npm run build:client
 
 if [ $? -ne 0 ]; then
     echo "❌ Client build failed"
@@ -39,9 +27,9 @@ fi
 echo "✅ Client built successfully"
 echo ""
 
-# Step 4: Build server
-echo "🏗️  Step 4: Building server entry..."
-vite build --ssr src/ssg/entry-server.tsx --outDir dist/server
+# Step 3: Build server
+echo "🏗️  Step 3: Building server entry..."
+npm run build:server
 
 if [ $? -ne 0 ]; then
     echo "❌ Server build failed"
@@ -51,9 +39,9 @@ fi
 echo "✅ Server built successfully"
 echo ""
 
-# Step 5: Prerender
-echo "🎨 Step 5: Prerendering pages..."
-tsx scripts/prerender.ts
+# Step 4: Prerender
+echo "🎨 Step 4: Prerendering pages..."
+npm run prerender
 
 if [ $? -ne 0 ]; then
     echo "❌ Prerendering failed"
@@ -63,13 +51,13 @@ fi
 echo "✅ Pages prerendered successfully"
 echo ""
 
-# Step 6: Generate final sitemap from SSG build log
-echo "🗺️  Step 6: Generating final sitemap from SSG build log..."
+# Step 5: Generate sitemap from SSG build log
+echo "🗺️  Step 5: Generating sitemap from SSG build log..."
 npm run generate-sitemap
 
 if [ $? -eq 0 ]; then
     echo ""
-    echo "✅ Static site generated successfully!"
+    echo "✅ Complete static site with sitemap generated successfully!"
     echo "📦 Output directory: dist/client/"
     echo "📍 Sitemap: dist/client/sitemap.xml"
     echo ""

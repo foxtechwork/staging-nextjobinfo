@@ -30,7 +30,7 @@ const Index = () => {
         <meta property="og:url" content="https://nextjobinfo.com/" />
         <meta property="og:title" content="Latest Govt Jobs 2025 - Next Job Info | Sarkari Naukri" />
         <meta property="og:description" content="Find latest govt jobs 2025, sarkari naukri alerts, bank, railway, SSC, UPSC jobs. Free daily job alerts & exam results. Apply online today!" />
-        <meta property="og:image" content="/share-jobs-with-nextjobinfo.png" />
+        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="Next Job Info" />
@@ -40,7 +40,7 @@ const Index = () => {
         <meta name="twitter:url" content="https://nextjobinfo.com/" />
         <meta name="twitter:title" content="Latest Govt Jobs 2025 - Next Job Info | Sarkari Naukri" />
         <meta name="twitter:description" content="Find latest govt jobs 2025, sarkari naukri alerts, bank, railway, SSC, UPSC jobs. Free daily job alerts & exam results." />
-        <meta name="twitter:image" content="/share-jobs-with-nextjobinfo.png" />
+        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
         
         {/* Organization Structured Data */}
         <script type="application/ld+json">

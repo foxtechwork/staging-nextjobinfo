@@ -69,6 +69,8 @@ export const useJobs = (options?: any) => {
     },
     enabled: !ssgJobs, // Disable query if SSG data exists
     initialData: ssgJobs,
+    staleTime: ssgJobs ? Infinity : 0, // Keep SSG data fresh
+    gcTime: ssgJobs ? Infinity : 5 * 60 * 1000,
     ...options,
   });
 };
@@ -218,6 +220,8 @@ export const useJobSearch = (searchQuery: string, filters: {
     },
     enabled: !ssgJobs, // Disable if SSG data exists
     initialData: filteredSsgData,
+    staleTime: ssgJobs ? Infinity : 0, // Keep SSG data fresh forever
+    gcTime: ssgJobs ? Infinity : 5 * 60 * 1000, // Don't garbage collect SSG data
   });
 };
 
