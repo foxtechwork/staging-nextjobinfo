@@ -124,22 +124,30 @@ export default function StateJobs() {
         />
         <meta name="robots" content="index, follow, max-image-preview:large" />
         <meta name="author" content="NextJobInfo" />
-        <link rel="canonical" href={`${window.location.origin}/state-jobs/${stateCode}`} />
+        <link rel="canonical" href={`https://nextjobinfo.com/state-jobs/${stateCode}`} />
         
         {/* Open Graph */}
         <meta property="og:type" content="website" />
-        <meta property="og:url" content={`${window.location.origin}/state-jobs/${stateCode}`} />
-        <meta property="og:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri`} />
-        <meta property="og:description" content={`Find ${filteredJobs.length}+ latest ${stateName} government jobs. Apply online for state govt vacancies.`} />
+        <meta property="og:site_name" content="NextJobInfo" />
+        <meta property="og:locale" content="en_IN" />
+        <meta property="og:url" content={`https://nextjobinfo.com/state-jobs/${stateCode}`} />
+        <meta property="og:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri | NextJobInfo`} />
+        <meta property="og:description" content={`Find ${filteredJobs.length}+ latest ${stateName} government jobs. Apply online for state govt vacancies, exam notifications and recruitment updates.`} />
         <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta property="og:image:secure_url" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta property="og:image:type" content="image/webp" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content={`${stateName} Government Jobs 2025`} />
         
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${stateName} Govt Jobs 2025`} />
-        <meta name="twitter:description" content={`${filteredJobs.length}+ latest ${stateName} government jobs`} />
+        <meta name="twitter:site" content="@NextJobInfo" />
+        <meta name="twitter:creator" content="@NextJobInfo" />
+        <meta name="twitter:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri`} />
+        <meta name="twitter:description" content={`${filteredJobs.length}+ latest ${stateName} government jobs and recruitment updates`} />
         <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta name="twitter:image:alt" content={`${stateName} Government Jobs 2025`} />
         
         {/* CollectionPage Schema with JobPosting */}
         <script type="application/ld+json">
@@ -148,12 +156,12 @@ export default function StateJobs() {
             "@type": "CollectionPage",
             "name": `${stateName} Government Jobs 2025`,
             "description": `Latest government job opportunities and sarkari naukri vacancies in ${stateName}`,
-            "url": `${window.location.origin}/state-jobs/${stateCode}`,
+            "url": `https://nextjobinfo.com/state-jobs/${stateCode}`,
             "inLanguage": "en-IN",
             "isPartOf": {
               "@type": "WebSite",
               "name": "NextJobInfo",
-              "url": window.location.origin
+              "url": "https://nextjobinfo.com"
             },
             "breadcrumb": {
               "@type": "BreadcrumbList",
@@ -162,13 +170,13 @@ export default function StateJobs() {
                   "@type": "ListItem",
                   "position": 1,
                   "name": "Home",
-                  "item": window.location.origin
+                  "item": "https://nextjobinfo.com"
                 },
                 {
                   "@type": "ListItem", 
                   "position": 2,
                   "name": "State Jobs",
-                  "item": `${window.location.origin}/state-selection`
+                  "item": "https://nextjobinfo.com/state-selection"
                 },
                 {
                   "@type": "ListItem",

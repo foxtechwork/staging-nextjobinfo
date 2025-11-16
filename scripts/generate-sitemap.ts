@@ -11,7 +11,7 @@ interface SitemapUrl {
 async function generateSitemap() {
   console.log('🗺️  Generating sitemap.xml...');
   
-  const baseUrl = 'https://nextjobinfo.com';
+  const baseUrl = 'https://nextjobinfo.com'; // No www prefix
   const today = new Date().toISOString().split('T')[0];
   
   // Try to load routes from ssg-build.log.json first (most accurate), fallback to static-routes.json
