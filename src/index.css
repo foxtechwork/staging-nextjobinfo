@@ -161,15 +161,40 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground font-inter text-base;
-    font-size: 16px;
+    font-size: 16px; /* Prevents iOS zoom on form inputs */
     line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
   }
   
-  /* Enhanced focus indicators - WCAG 2.4.7 */
+  /* Mobile-optimized touch targets - WCAG 2.5.5 */
+  @media (max-width: 768px) {
+    button, a, input, select, textarea {
+      min-height: 44px; /* iOS recommended minimum touch target */
+      min-width: 44px;
+    }
+    
+    /* Better spacing for mobile touch */
+    button + button,
+    a + a {
+      margin-left: 0.5rem;
+    }
+  }
+  
+  /* Enhanced focus indicators - WCAG 2.4.7 - Mobile friendly */
   *:focus-visible {
     outline: 3px solid hsl(var(--ring));
     outline-offset: 2px;
     border-radius: 4px;
+  }
+  
+  /* Touch-friendly focus for mobile */
+  @media (max-width: 768px) {
+    *:focus-visible {
+      outline-width: 4px;
+      outline-offset: 3px;
+    }
   }
   
   button:focus-visible,
@@ -196,23 +221,48 @@ All colors MUST be HSL.
     text-underline-offset: 0.2em;
   }
 
-  /* Enhanced typography scale */
-  h1 { @apply text-5xl md:text-6xl font-bold font-playfair; }
-  h2 { @apply text-3xl md:text-4xl font-semibold font-playfair; }
-  h3 { @apply text-xl md:text-2xl font-semibold; }
-  h4 { @apply text-lg md:text-xl font-medium; }
-  h5 { @apply text-base md:text-lg font-medium; }
-  h6 { @apply text-sm md:text-base font-medium; }
+  /* Enhanced typography scale - Mobile optimized */
+  h1 { @apply text-4xl sm:text-5xl md:text-6xl font-bold font-playfair; }
+  h2 { @apply text-2xl sm:text-3xl md:text-4xl font-semibold font-playfair; }
+  h3 { @apply text-lg sm:text-xl md:text-2xl font-semibold; }
+  h4 { @apply text-base sm:text-lg md:text-xl font-medium; }
+  h5 { @apply text-sm sm:text-base md:text-lg font-medium; }
+  h6 { @apply text-xs sm:text-sm md:text-base font-medium; }
   
-  p { @apply text-base md:text-lg; }
-  .text-sm { font-size: 0.9rem; }
-  .text-xs { font-size: 0.8rem; }
+  p { @apply text-sm sm:text-base md:text-lg; }
+  .text-sm { font-size: 0.875rem; } /* 14px - Mobile readable */
+  .text-xs { font-size: 0.75rem; } /* 12px */
 }
 
 /* Utility Classes */
 @layer utilities {
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  /* Mobile-specific utilities */
+  .mobile-tap-safe {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  
+  .mobile-scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  
+  /* Prevent mobile zoom on inputs */
+  @media (max-width: 768px) {
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="number"],
+    input[type="search"],
+    select,
+    textarea {
+      font-size: 16px !important; /* Prevents iOS zoom */
+    }
   }
 }
 
@@ -376,22 +426,54 @@ All colors MUST be HSL.
     @apply text-sm sm:text-base;
   }
   
+  /* Mobile-optimized card spacing */
+  @media (max-width: 768px) {
+    .card-grid {
+      gap: 1rem !important;
+    }
+    
+    .card-padding {
+      padding: 0.75rem !important;
+    }
+  }
+  
   /* Hide advertisement number on mobile only */
   @media (max-width: 768px) {
     .mobile-hide-advt {
       display: none !important;
     }
   }
+  
+  /* Better touch feedback on mobile */
+  @media (max-width: 768px) {
+    .mobile-interactive:active {
+      transform: scale(0.98);
+      opacity: 0.9;
+    }
+  }
 }
 
-/* Performance optimizations */
+/* Performance optimizations - Mobile enhanced */
 .lazy-load {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
+  content-visibility: auto; /* Modern performance boost */
 }
 
 .lazy-load.loaded {
   opacity: 1;
+}
+
+/* Reduce motion for accessibility and better mobile performance */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Ensure mobile compatibility */

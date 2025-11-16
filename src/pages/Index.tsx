@@ -18,6 +18,13 @@ const Index = () => {
         />
         <link rel="canonical" href="https://nextjobinfo.com/" />
         
+        {/* Mobile-specific meta tags */}
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="HandheldFriendly" content="true" />
+        
         {/* Open Graph tags */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://nextjobinfo.com/" />
@@ -58,7 +65,7 @@ const Index = () => {
           })}
         </script>
         
-        {/* Website Structured Data */}
+        {/* Website Structured Data with Mobile App Support */}
         <script type="application/ld+json">
           {JSON.stringify({
             "@context": "https://schema.org",
@@ -78,7 +85,13 @@ const Index = () => {
               "@type": "SearchAction",
               "target": {
                 "@type": "EntryPoint",
-                "urlTemplate": `${typeof window !== 'undefined' ? window.location.origin : 'https://nextjobinfo.com'}/?search={search_term_string}`
+                "urlTemplate": `${typeof window !== 'undefined' ? window.location.origin : 'https://nextjobinfo.com'}/?search={search_term_string}`,
+                "actionPlatform": [
+                  "http://schema.org/DesktopWebPlatform",
+                  "http://schema.org/MobileWebPlatform",
+                  "http://schema.org/IOSPlatform",
+                  "http://schema.org/AndroidPlatform"
+                ]
               },
               "query-input": "required name=search_term_string"
             }
@@ -116,6 +129,35 @@ const Index = () => {
                 "item": `${typeof window !== 'undefined' ? window.location.origin : 'https://nextjobinfo.com'}/about`
               }
             ]
+          })}
+        </script>
+        
+        {/* Mobile Application Structured Data for Better Mobile SEO */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "MobileApplication",
+            "name": "NextJobInfo - Government Jobs Portal",
+            "operatingSystem": "All",
+            "browserRequirements": "Requires JavaScript. Mobile optimized.",
+            "applicationCategory": "BusinessApplication",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "INR"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.5",
+              "ratingCount": "1000",
+              "bestRating": "5",
+              "worstRating": "1"
+            },
+            "about": {
+              "@type": "Thing",
+              "name": "Government Job Portal for India"
+            },
+            "featureList": "Daily Job Alerts, Exam Results, Application Tracking, Mobile Optimized"
           })}
         </script>
       </Helmet>

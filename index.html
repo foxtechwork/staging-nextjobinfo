@@ -2,11 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1e40af" />
+    
+    <!-- Mobile-optimized viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, minimum-scale=1.0, viewport-fit=cover" />
+    
+    <!-- Mobile Web App Capable -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="NextJobInfo" />
+    
+    <!-- Theme Colors for Mobile -->
+    <meta name="theme-color" content="#1e40af" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1e3a8a" media="(prefers-color-scheme: dark)" />
+    
+    <!-- SEO & Bot Instructions -->
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <meta name="bingbot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+    
+    <!-- Mobile Performance -->
+    <meta name="format-detection" content="telephone=no" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
     
     <!-- Favicon and Icons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
@@ -15,8 +32,6 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-192x192.png" />
     <link rel="manifest" href="/manifest.json" />
     
-    <!-- Meta tags will be injected by Helmet on each page via <!--app-head--> placeholder -->
-
     <!-- Preconnect to external domains for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,10 +39,10 @@
     <link rel="dns-prefetch" href="https://pagead2.googlesyndication.com">
     <link rel="dns-prefetch" href="https://googleads.g.doubleclick.net">
     
-    <!-- Critical fonts with display swap for faster rendering -->
+    <!-- Critical fonts optimized for mobile -->
     <link 
       rel="preload" 
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap" 
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Playfair+Display:wght@700&display=swap&text=NextJobInfoLatestGovernmentJobsIndiaSearchApply" 
       as="style" 
       onload="this.onload=null;this.rel='stylesheet'"
     >
@@ -38,19 +53,9 @@
       >
     </noscript>
     
-    <!-- Resource hints for critical assets -->
-    <link rel="preload" as="script" href="/src/main.tsx" crossorigin>
-    <link rel="preload" as="image" href="/assets/nextjobinfo-logo-dark-BivKYyOV.webp" type="image/webp">
-    
-    <!-- Scripts moved to end of body for better SEO and link previews -->
-    
-    <!--app-head-->
-  </head>
-
-  <body>
-    <a href="#main-content" class="skip-to-main">Skip to main content</a>
-    <div id="root"><!--app-html--></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <!-- Resource hints optimized for mobile networks -->
+    <link rel="preload" as="script" href="/src/main.tsx" crossorigin fetchpriority="high">
+    <link rel="preload" as="image" href="/assets/nextjobinfo-logo-dark-BivKYyOV.webp" type="image/webp" fetchpriority="high">
     
     <!-- Defer non-critical scripts - Load after page interactive -->
     <script>
@@ -96,5 +101,13 @@
       });
       setTimeout(loadAnalytics, 3000);
     </script>
+    
+    <!--app-head-->
+  </head>
+
+  <body>
+    <a href="#main-content" class="skip-to-main">Skip to main content</a>
+    <div id="root"><!--app-html--></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
