@@ -9,19 +9,19 @@ This document summarizes the fixes for three critical SEO/SSG issues.
 ## ✅ TASK 1: OG Image Path in Dist Folder
 
 ### Issue
-The Open Graph image at `/src/assets/share-jobs-with-nextjobinfo.png` was referenced as `https://nextjobinfo.com/share-jobs-with-nextjobinfo.png`, but concerns existed that it wouldn't be copied to the dist folder after build.
+The Open Graph image at `/src/assets/share-jobs-with-nextjobinfo.png` was referenced as `https://staging-nextjobinfo.pages.dev/share-jobs-with-nextjobinfo.png`, but concerns existed that it wouldn't be copied to the dist folder after build.
 
 ### Status: **ALREADY FIXED** ✅
 
 ### Solution
 The image already exists at `public/share-jobs-with-nextjobinfo.png`, which is the correct location. During Vite build:
 - All files in `public/` are automatically copied to `dist/client/` root
-- The image will be available at `https://nextjobinfo.com/share-jobs-with-nextjobinfo.png` after deployment
+- The image will be available at `https://staging-nextjobinfo.pages.dev/share-jobs-with-nextjobinfo.png` after deployment
 
 ### Verification
 - ✅ Image exists: `public/share-jobs-with-nextjobinfo.png`
-- ✅ Correct reference in `index.html` (line 55): `content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png"`
-- ✅ Correct reference in `JobDetails.tsx` (line 232): `const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.png'`
+- ✅ Correct reference in `index.html` (line 55): `content="https://staging-nextjobinfo.pages.dev/share-jobs-with-nextjobinfo.png"`
+- ✅ Correct reference in `JobDetails.tsx` (line 232): `const imageUrl = 'https://staging-nextjobinfo.pages.dev/share-jobs-with-nextjobinfo.png'`
 - ✅ Used in OG tags (lines 247, 257): `<meta property="og:image" content={imageUrl} />`
 
 ---
@@ -51,7 +51,7 @@ Job detail pages were showing default OG title "Latest Govt Jobs 2025 - NextJobI
    <meta property="og:url" content="https://nextjobinfo.com/" />
    <meta property="og:title" content="Latest Govt Jobs 2025 - Next Job Info | Sarkari Naukri" />
    <meta property="og:description" content="Find latest govt jobs 2025..." />
-   <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
+   <meta property="og:image" content="https://staging-nextjobinfo.pages.dev/share-jobs-with-nextjobinfo.png" />
    <meta name="twitter:card" content="summary_large_image" />
    ```
 
