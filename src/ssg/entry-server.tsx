@@ -11,6 +11,13 @@ export async function render(url: string) {
   
   // Fetch data for this route during SSG
   const pageData = await fetchPageData(url);
+
+  // Make SSG data available to hooks during SSR render (prerender.ts mocks window)
+  try {
+    const g: any = globalThis as any;
+    g.window = g.window || {};
+    g.window.__SSG_DATA__ = pageData;
+  } catch {}
   
   const html = renderToString(
     <HelmetProvider context={helmetContext}>

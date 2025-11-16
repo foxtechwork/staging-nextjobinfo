@@ -1,11 +1,65 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { AlertTriangle, Info, ExternalLink, Clock } from "lucide-react";
 
 const Disclaimer = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Disclaimer | NextJobInfo - Important Legal Information</title>
+        <meta 
+          name="description" 
+          content="NextJobInfo Disclaimer - Important information about job listings, third-party content, accuracy of information, and limitation of liability. Read before using our services." 
+        />
+        <meta 
+          name="keywords" 
+          content="disclaimer, legal information, NextJobInfo disclaimer, liability limitation, job information accuracy, third-party content" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/disclaimer`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/disclaimer`} />
+        <meta property="og:title" content="Disclaimer | NextJobInfo - Important Legal Information" />
+        <meta property="og:description" content="NextJobInfo Disclaimer - Important information about job listings, third-party content, accuracy of information, and limitation of liability. Read before using our services." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/disclaimer`} />
+        <meta name="twitter:title" content="Disclaimer | NextJobInfo - Important Legal Information" />
+        <meta name="twitter:description" content="NextJobInfo Disclaimer - Important information about job listings, third-party content, accuracy of information, and limitation of liability. Read before using our services." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Disclaimer",
+                "item": `${window.location.origin}/disclaimer`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
@@ -135,6 +189,7 @@ const Disclaimer = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

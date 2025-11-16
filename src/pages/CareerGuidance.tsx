@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Compass, GraduationCap, Briefcase, TrendingUp, Users, BookOpen } from "lucide-react";
@@ -63,8 +64,61 @@ const CareerGuidance = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Career Guidance for Government Jobs 2025 | NextJobInfo</title>
+        <meta 
+          name="description" 
+          content="Expert career guidance for government jobs. Get advice on civil services, banking, railways, teaching, and PSU careers. Plan your sarkari naukri path with NextJobInfo." 
+        />
+        <meta 
+          name="keywords" 
+          content="career guidance, government job advice, civil service career, banking career, PSU career planning, sarkari naukri guidance" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/career`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/career`} />
+        <meta property="og:title" content="Career Guidance for Government Jobs 2025 | NextJobInfo" />
+        <meta property="og:description" content="Expert career guidance for government jobs. Get advice on civil services, banking, railways, teaching, and PSU careers. Plan your sarkari naukri path with NextJobInfo." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/career`} />
+        <meta name="twitter:title" content="Career Guidance for Government Jobs 2025 | NextJobInfo" />
+        <meta name="twitter:description" content="Expert career guidance for government jobs. Get advice on civil services, banking, railways, teaching, and PSU careers. Plan your sarkari naukri path with NextJobInfo." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Career Guidance",
+                "item": `${window.location.origin}/career`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
@@ -228,6 +282,7 @@ const CareerGuidance = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

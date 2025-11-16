@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import { Clock, Bell, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,8 +7,40 @@ import Footer from "@/components/layout/Footer";
 
 export default function ComingSoon() {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Coming Soon - Exam Alerts | NextJobInfo Government Jobs</title>
+        <meta 
+          name="description" 
+          content="New features coming soon on NextJobInfo - Exam alerts, admit cards, results, answer keys, and real-time notifications. Stay tuned for comprehensive exam updates." 
+        />
+        <meta 
+          name="keywords" 
+          content="coming soon, exam alerts, admit cards, results, answer keys, exam notifications, NextJobInfo updates" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/admit-cards`} />
+        <meta name="robots" content="noindex, follow" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/admit-cards`} />
+        <meta property="og:title" content="Coming Soon - Exam Alerts | NextJobInfo Government Jobs" />
+        <meta property="og:description" content="New features coming soon on NextJobInfo - Exam alerts, admit cards, results, answer keys, and real-time notifications. Stay tuned for comprehensive exam updates." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/admit-cards`} />
+        <meta name="twitter:title" content="Coming Soon - Exam Alerts | NextJobInfo Government Jobs" />
+        <meta name="twitter:description" content="New features coming soon on NextJobInfo - Exam alerts, admit cards, results, answer keys, and real-time notifications. Stay tuned for comprehensive exam updates." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 flex items-center justify-center bg-gradient-to-br from-background via-background to-muted">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
@@ -85,5 +118,6 @@ export default function ComingSoon() {
       </main>
       <Footer />
     </div>
+    </>
   );
 }

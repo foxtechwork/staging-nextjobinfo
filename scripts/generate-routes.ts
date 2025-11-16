@@ -111,20 +111,16 @@ async function generateRoutes() {
   // Fetch all job page links from database
   console.log('💼 Fetching job routes from database...');
   try {
-    // TESTING MODE: Limit to 10 job pages for faster builds
-    const TESTING_LIMIT = 10;
-    
     const { data: jobs, error } = await supabase
       .from('jobs_data')
       .select('page_link')
       .eq('is_active', true)
-      .not('page_link', 'is', null)
-      .limit(TESTING_LIMIT); // Comment out this line to generate all job pages
+      .not('page_link', 'is', null);
 
     if (error) {
       console.error('❌ Error fetching jobs:', error);
     } else if (jobs && jobs.length > 0) {
-      console.log(`✅ Found ${jobs.length} job listings (TESTING MODE: Limited to ${TESTING_LIMIT})`);
+      console.log(`✅ Found ${jobs.length} job listings`);
       jobs.forEach(job => {
         if (job.page_link) {
           // Extract the job identifier from the page_link
@@ -136,6 +132,7 @@ async function generateRoutes() {
   } catch (error) {
     console.error('❌ Error fetching job data:', error);
   }
+
 
   // Write routes to file
   const outputPath = path.join(process.cwd(), 'static-routes.json');

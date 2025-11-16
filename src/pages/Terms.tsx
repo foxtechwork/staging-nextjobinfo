@@ -1,11 +1,65 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { FileText, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 
 const Terms = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Terms of Service | NextJobInfo - User Agreement & Conditions</title>
+        <meta 
+          name="description" 
+          content="Read NextJobInfo Terms of Service - User agreement, service conditions, usage policy, and legal terms for accessing government job alerts and information." 
+        />
+        <meta 
+          name="keywords" 
+          content="terms of service, user agreement, service conditions, NextJobInfo terms, usage policy, legal terms" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/terms`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/terms`} />
+        <meta property="og:title" content="Terms of Service | NextJobInfo - User Agreement & Conditions" />
+        <meta property="og:description" content="Read NextJobInfo Terms of Service - User agreement, service conditions, usage policy, and legal terms for accessing government job alerts and information." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/terms`} />
+        <meta name="twitter:title" content="Terms of Service | NextJobInfo - User Agreement & Conditions" />
+        <meta name="twitter:description" content="Read NextJobInfo Terms of Service - User agreement, service conditions, usage policy, and legal terms for accessing government job alerts and information." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Terms of Service",
+                "item": `${window.location.origin}/terms`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
@@ -119,6 +173,7 @@ const Terms = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

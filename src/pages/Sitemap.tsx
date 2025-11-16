@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Link } from "react-router-dom";
@@ -44,9 +45,62 @@ const Sitemap = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 py-12">
+    <>
+      <Helmet>
+        <title>Sitemap - All Pages | NextJobInfo Government Jobs Portal</title>
+        <meta 
+          name="description" 
+          content="Complete sitemap of NextJobInfo - Browse all government job pages, exam resources, career guidance, state-wise jobs, and categories. Find sarkari naukri opportunities easily." 
+        />
+        <meta 
+          name="keywords" 
+          content="sitemap, all pages, government jobs list, sarkari naukri pages, job categories, state jobs, exam resources" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/sitemap`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/sitemap`} />
+        <meta property="og:title" content="Sitemap - All Pages | NextJobInfo Government Jobs Portal" />
+        <meta property="og:description" content="Complete sitemap of NextJobInfo - Browse all government job pages, exam resources, career guidance, state-wise jobs, and categories. Find sarkari naukri opportunities easily." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/sitemap`} />
+        <meta name="twitter:title" content="Sitemap - All Pages | NextJobInfo Government Jobs Portal" />
+        <meta name="twitter:description" content="Complete sitemap of NextJobInfo - Browse all government job pages, exam resources, career guidance, state-wise jobs, and categories. Find sarkari naukri opportunities easily." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Sitemap",
+                "item": `${window.location.origin}/sitemap`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
             <Globe className="h-16 w-16 text-primary mx-auto mb-4" />
@@ -120,9 +174,10 @@ const Sitemap = () => {
             <p>This sitemap is updated regularly. Last updated: January 2025</p>
           </div>
         </div>
-      </main>
-      <Footer />
-    </div>
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 };
 

@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
@@ -7,8 +8,61 @@ import { Textarea } from "@/components/ui/textarea";
 
 const Contact = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Contact Us - Get in Touch | NextJobInfo Support</title>
+        <meta 
+          name="description" 
+          content="Contact NextJobInfo support team for help with government job alerts, application queries, and career guidance. Reach us via email, phone, or contact form." 
+        />
+        <meta 
+          name="keywords" 
+          content="contact nextjobinfo, government job support, job alert support, contact us, customer service, help desk" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/contact`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/contact`} />
+        <meta property="og:title" content="Contact Us - Get in Touch | NextJobInfo Support" />
+        <meta property="og:description" content="Contact NextJobInfo support team for help with government job alerts, application queries, and career guidance. Reach us via email, phone, or contact form." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/contact`} />
+        <meta name="twitter:title" content="Contact Us - Get in Touch | NextJobInfo Support" />
+        <meta name="twitter:description" content="Contact NextJobInfo support team for help with government job alerts, application queries, and career guidance. Reach us via email, phone, or contact form." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Contact Us",
+                "item": `${window.location.origin}/contact`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           <h1 className="text-4xl font-bold text-center mb-8">Contact Us</h1>
@@ -130,6 +184,7 @@ const Contact = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

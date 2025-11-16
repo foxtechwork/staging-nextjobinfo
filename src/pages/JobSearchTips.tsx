@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Search, Target, Clock, CheckCircle, Users, Trophy } from "lucide-react";
@@ -73,8 +74,61 @@ const JobSearchTips = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Government Job Search Tips 2025 - Expert Advice | NextJobInfo</title>
+        <meta 
+          name="description" 
+          content="Expert job search tips for government positions. Learn strategies to find sarkari naukri, apply online, prepare for exams, and succeed in government job applications." 
+        />
+        <meta 
+          name="keywords" 
+          content="job search tips, government job tips, sarkari naukri tips, job application advice, exam preparation tips, job hunting strategies" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/tips`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="article" />
+        <meta property="og:url" content={`${window.location.origin}/tips`} />
+        <meta property="og:title" content="Government Job Search Tips 2025 - Expert Advice | NextJobInfo" />
+        <meta property="og:description" content="Expert job search tips for government positions. Learn strategies to find sarkari naukri, apply online, prepare for exams, and succeed in government job applications." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/tips`} />
+        <meta name="twitter:title" content="Government Job Search Tips 2025 - Expert Advice | NextJobInfo" />
+        <meta name="twitter:description" content="Expert job search tips for government positions. Learn strategies to find sarkari naukri, apply online, prepare for exams, and succeed in government job applications." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Job Search Tips",
+                "item": `${window.location.origin}/tips`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="text-center mb-12">
@@ -226,6 +280,7 @@ const JobSearchTips = () => {
       </main>
       <Footer />
     </div>
+    </>
   );
 };
 

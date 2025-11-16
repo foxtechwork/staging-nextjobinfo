@@ -1,11 +1,65 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Shield, Eye, Lock, Users } from "lucide-react";
 
 const Privacy = () => {
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <>
+      <Helmet>
+        <title>Privacy Policy | NextJobInfo - Your Data Protection</title>
+        <meta 
+          name="description" 
+          content="NextJobInfo Privacy Policy - Learn how we protect your personal information and data. Read our privacy practices for job alerts, user data, and security measures." 
+        />
+        <meta 
+          name="keywords" 
+          content="privacy policy, data protection, personal information, NextJobInfo privacy, user privacy, data security" 
+        />
+        <link rel="canonical" href={`${window.location.origin}/privacy`} />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={`${window.location.origin}/privacy`} />
+        <meta property="og:title" content="Privacy Policy | NextJobInfo - Your Data Protection" />
+        <meta property="og:description" content="NextJobInfo Privacy Policy - Learn how we protect your personal information and data. Read our privacy practices for job alerts, user data, and security measures." />
+        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:site_name" content="NextJobInfo" />
+        
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:url" content={`${window.location.origin}/privacy`} />
+        <meta name="twitter:title" content="Privacy Policy | NextJobInfo - Your Data Protection" />
+        <meta name="twitter:description" content="NextJobInfo Privacy Policy - Learn how we protect your personal information and data. Read our privacy practices for job alerts, user data, and security measures." />
+        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        
+        {/* BreadcrumbList */}
+        <script type="application/ld+json">
+          {JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": window.location.origin
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Privacy Policy",
+                "item": `${window.location.origin}/privacy`
+              }
+            ]
+          })}
+        </script>
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col">
+        <Header />
       <main className="flex-1 py-12">
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="text-center mb-12">
@@ -114,8 +168,9 @@ const Privacy = () => {
           </div>
         </div>
       </main>
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 };
 

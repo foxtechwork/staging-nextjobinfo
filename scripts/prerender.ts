@@ -15,11 +15,14 @@ console.error = (...args: any[]) => {
   originalConsoleError(...args);
 };
 
+// Site URL for absolute canonical/OG tags
+const siteUrl = process.env.VITE_SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'https://nextjobinfo.com';
+
 // Mock browser APIs for SSR environment
 (global as any).window = {
   location: {
-    origin: 'https://example.com',
-    href: 'https://example.com',
+    origin: siteUrl,
+    href: siteUrl,
     pathname: '/',
     search: '',
     hash: '',
@@ -118,6 +121,9 @@ function getRouteOutputPath(route: string): string {
 
 // SSG persistent cache to survive client rebuilds (which wipes dist/client)
 const CACHE_DIR = path.resolve(process.cwd(), 'dist/ssg-cache');
+// Bump this version when head/helmet injection logic changes to force a one-time full rebuild
+const CACHE_VERSION = 'v3-helmet-ssgdata-2025-11-16';
+const VERSION_FILE = path.resolve(CACHE_DIR, 'version.json');
 
 function getCacheOutputPath(route: string): string {
   if (route === '/') {
@@ -159,6 +165,27 @@ function saveToCache(route: string, html: string) {
   fs.writeFileSync(cachePath, html);
 }
 
+function cleanDefaultMeta(template: string): string {
+  return template
+    .replace(/<title[^>]*>.*?<\/title>/gi, '')
+    .replace(/<meta\s+name="description"[^>]*>/gi, '')
+    .replace(/<link\s+rel="canonical"[^>]*>/gi, '')
+    .replace(/<meta\s+name="keywords"[^>]*>/gi, '')
+    .replace(/<meta\s+name="author"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:title"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:description"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:url"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:image"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:image:width"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:image:height"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:site_name"[^>]*>/gi, '')
+    .replace(/<meta\s+property="og:type"[^>]*>/gi, '')
+    .replace(/<meta\s+name="twitter:title"[^>]*>/gi, '')
+    .replace(/<meta\s+name="twitter:description"[^>]*>/gi, '')
+    .replace(/<meta\s+name="twitter:url"[^>]*>/gi, '')
+    .replace(/<meta\s+name="twitter:image"[^>]*>/gi, '')
+    .replace(/<meta\s+name="twitter:card"[^>]*>/gi, '');
+}
 
 function findExistingPages(distPath: string): Set<string> {
   const existingPages = new Set<string>();
@@ -274,9 +301,24 @@ async function prerender() {
   console.log(`📍 Found ${routes.length} routes in database`);
   
   // Check cache directory (survives client rebuild)
-  ensureDir(CACHE_DIR);
-  const existingPages = findExistingPages(CACHE_DIR);
-  console.log(`📦 Found ${existingPages.size} existing cached pages\n`);
+ensureDir(CACHE_DIR);
+let existingPages = new Set<string>();
+let forceRegen = false;
+try {
+  const versionData = fs.existsSync(VERSION_FILE)
+    ? JSON.parse(fs.readFileSync(VERSION_FILE, 'utf-8'))
+    : null;
+  if (!versionData || versionData.version !== CACHE_VERSION) {
+    forceRegen = true;
+  }
+} catch {}
+
+if (forceRegen) {
+  console.log('♻️  Cache invalidated (version change) — forcing full prerender');
+} else {
+  existingPages = findExistingPages(CACHE_DIR);
+}
+console.log(`📦 Found ${existingPages.size} existing cached pages${forceRegen ? ' (ignored)' : ''}\n`);
   
   // Identify orphaned pages (exist in cache but not in routes)
   const validRoutes = new Set(routes);
@@ -331,6 +373,16 @@ async function prerender() {
       
       await Promise.all(batch.map(async (route) => {
         try {
+          // Update window location for this route to generate correct absolute URLs
+          const routeUrl = new URL(route, siteUrl);
+          (global as any).window.location = {
+            origin: routeUrl.origin,
+            href: routeUrl.href,
+            pathname: routeUrl.pathname,
+            search: routeUrl.search,
+            hash: routeUrl.hash,
+          } as any;
+
           // Render the route
           const { html, helmet, data } = await render(route);
         
@@ -338,27 +390,9 @@ async function prerender() {
           const dataScript = `<script>window.__SSG_DATA__=${JSON.stringify(data)};</script>`;
           
           // Inject rendered HTML, Helmet tags, and data
-          // Remove ALL default meta tags to prevent duplicates and ensure page-specific tags are used
-          let finalHtml = template
-            // Remove default title
-            .replace(/<title[^>]*>.*?<\/title>/g, '')
-            // Remove default description
-            .replace(/<meta\s+name="description"[^>]*>/gi, '')
-            // Remove default Open Graph tags
-            .replace(/<meta\s+property="og:title"[^>]*>/gi, '')
-            .replace(/<meta\s+property="og:description"[^>]*>/gi, '')
-            .replace(/<meta\s+property="og:url"[^>]*>/gi, '')
-            .replace(/<meta\s+property="og:image"[^>]*>/gi, '')
-            .replace(/<meta\s+property="og:image:width"[^>]*>/gi, '')
-            .replace(/<meta\s+property="og:image:height"[^>]*>/gi, '')
-            // Remove default Twitter Card tags (note: Twitter uses name, not property)
-            .replace(/<meta\s+name="twitter:title"[^>]*>/gi, '')
-            .replace(/<meta\s+name="twitter:description"[^>]*>/gi, '')
-            .replace(/<meta\s+name="twitter:url"[^>]*>/gi, '')
-            .replace(/<meta\s+name="twitter:image"[^>]*>/gi, '')
-            .replace(/<meta\s+name="twitter:card"[^>]*>/gi, '')
-            // Now inject helmet data (which includes page-specific tags)
-            .replace('<!--app-head-->', helmet.title + helmet.meta + helmet.link + helmet.script + dataScript)
+          const base = cleanDefaultMeta(template);
+          let finalHtml = base
+            .replace('<!--app-head-->', (helmet.title || '') + (helmet.meta || '') + (helmet.link || '') + (helmet.script || '') + dataScript)
             .replace('<!--app-html-->', html);
           
           // Save to cache first
@@ -376,8 +410,9 @@ async function prerender() {
           
           // Create a fallback page for errored routes
           try {
-            const fallbackHtml = template
-              .replace('<!--app-head-->', '<title>Loading...</title>')
+            const base = cleanDefaultMeta(template);
+            const fallbackHtml = base
+              .replace('<!--app-head-->', `<title>${route === '/' ? 'NextJobInfo' : route.replace(/\/.+\//, '').replace(/-/g, ' ')} – NextJobInfo</title>`)
               .replace('<!--app-html-->', '<div>Loading...</div>');
             
             saveToCache(route, fallbackHtml);
@@ -418,6 +453,12 @@ async function prerender() {
   console.log(`\n📝 Build log saved to: ${logPath}`);
   console.log(`📦 Output directory: dist/client/`);
   console.log('='.repeat(60) + '\n');
+  
+  // Persist cache version
+  try {
+    ensureDir(CACHE_DIR);
+    fs.writeFileSync(VERSION_FILE, JSON.stringify({ version: CACHE_VERSION }));
+  } catch {}
   
   // Exit successfully
   process.exit(0);
