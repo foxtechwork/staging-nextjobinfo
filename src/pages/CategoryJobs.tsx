@@ -186,8 +186,8 @@ export default function CategoryJobs() {
         <meta property="og:url" content={`https://nextjobinfo.com/category/${category}`} />
         <meta property="og:title" content={`${categoryName} Jobs 2025 - Latest Sarkari Naukri | NextJobInfo`} />
         <meta property="og:description" content={`${filteredJobs.length}+ latest ${categoryName} government jobs and recruitment notifications updated daily.`} />
-        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
-        <meta property="og:image:secure_url" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
+        <meta property="og:image:secure_url" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
         <meta property="og:image:type" content="image/webp" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -199,7 +199,7 @@ export default function CategoryJobs() {
         <meta name="twitter:creator" content="@NextJobInfo" />
         <meta name="twitter:title" content={`${categoryName} Jobs 2025`} />
         <meta name="twitter:description" content={`${filteredJobs.length}+ latest ${categoryName} government jobs`} />
-        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
         <meta name="twitter:image:alt" content={`${categoryName} Jobs 2025`} />
         
         {/* CollectionPage Schema */}

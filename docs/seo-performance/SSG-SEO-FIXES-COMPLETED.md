@@ -9,19 +9,19 @@ This document summarizes the fixes for three critical SEO/SSG issues.
 ## ✅ TASK 1: OG Image Path in Dist Folder
 
 ### Issue
-The Open Graph image at `/src/assets/share-jobs-with-nextjobinfo.webp` was referenced as `https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp`, but concerns existed that it wouldn't be copied to the dist folder after build.
+The Open Graph image at `/src/assets/share-jobs-with-nextjobinfo.png` was referenced as `https://nextjobinfo.com/share-jobs-with-nextjobinfo.png`, but concerns existed that it wouldn't be copied to the dist folder after build.
 
 ### Status: **ALREADY FIXED** ✅
 
 ### Solution
-The image already exists at `public/share-jobs-with-nextjobinfo.webp`, which is the correct location. During Vite build:
+The image already exists at `public/share-jobs-with-nextjobinfo.png`, which is the correct location. During Vite build:
 - All files in `public/` are automatically copied to `dist/client/` root
-- The image will be available at `https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp` after deployment
+- The image will be available at `https://nextjobinfo.com/share-jobs-with-nextjobinfo.png` after deployment
 
 ### Verification
-- ✅ Image exists: `public/share-jobs-with-nextjobinfo.webp`
-- ✅ Correct reference in `index.html` (line 55): `content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp"`
-- ✅ Correct reference in `JobDetails.tsx` (line 232): `const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp'`
+- ✅ Image exists: `public/share-jobs-with-nextjobinfo.png`
+- ✅ Correct reference in `index.html` (line 55): `content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png"`
+- ✅ Correct reference in `JobDetails.tsx` (line 232): `const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.png'`
 - ✅ Used in OG tags (lines 247, 257): `<meta property="og:image" content={imageUrl} />`
 
 ---
@@ -51,7 +51,7 @@ Job detail pages were showing default OG title "Latest Govt Jobs 2025 - NextJobI
    <meta property="og:url" content="https://nextjobinfo.com/" />
    <meta property="og:title" content="Latest Govt Jobs 2025 - Next Job Info | Sarkari Naukri" />
    <meta property="og:description" content="Find latest govt jobs 2025..." />
-   <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.webp" />
+   <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
    <meta name="twitter:card" content="summary_large_image" />
    ```
 
@@ -185,7 +185,7 @@ cd dist/client
 
 # All files are ready:
 # ✅ sitemap.xml (with all routes)
-# ✅ share-jobs-with-nextjobinfo.webp (OG image)
+# ✅ share-jobs-with-nextjobinfo.png (OG image)
 # ✅ index.html (with dynamic meta tags per page)
 # ✅ All static assets
 
@@ -266,7 +266,7 @@ cd dist/client
 
 All three SEO tasks are now complete:
 
-1. **✅ OG Image Path**: Already working - `public/share-jobs-with-nextjobinfo.webp` copies to dist automatically
+1. **✅ OG Image Path**: Already working - `public/share-jobs-with-nextjobinfo.png` copies to dist automatically
 2. **✅ Dynamic OG Tags**: **FIXED** - Removed duplicate default tags from index.html, added OG tags to homepage
 3. **✅ Complete Sitemap**: Updated with all 79 routes including job URLs
 
