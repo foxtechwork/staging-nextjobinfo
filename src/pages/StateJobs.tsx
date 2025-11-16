@@ -133,8 +133,8 @@ export default function StateJobs() {
         <meta property="og:url" content={`https://nextjobinfo.com/state-jobs/${stateCode}`} />
         <meta property="og:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri | NextJobInfo`} />
         <meta property="og:description" content={`Find ${filteredJobs.length}+ latest ${stateName} government jobs. Apply online for state govt vacancies, exam notifications and recruitment updates.`} />
-        <meta property="og:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
-        <meta property="og:image:secure_url" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
+        <meta property="og:image" content="/share-jobs-with-nextjobinfo.png" />
+        <meta property="og:image:secure_url" content="/share-jobs-with-nextjobinfo.png" />
         <meta property="og:image:type" content="image/webp" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -146,7 +146,7 @@ export default function StateJobs() {
         <meta name="twitter:creator" content="@NextJobInfo" />
         <meta name="twitter:title" content={`${stateName} Govt Jobs 2025 - Latest Sarkari Naukri`} />
         <meta name="twitter:description" content={`${filteredJobs.length}+ latest ${stateName} government jobs and recruitment updates`} />
-        <meta name="twitter:image" content="https://nextjobinfo.com/share-jobs-with-nextjobinfo.png" />
+        <meta name="twitter:image" content="/share-jobs-with-nextjobinfo.png" />
         <meta name="twitter:image:alt" content={`${stateName} Government Jobs 2025`} />
         
         {/* CollectionPage Schema with JobPosting */}
