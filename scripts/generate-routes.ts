@@ -70,7 +70,7 @@ const categoryMapping: Record<string, string> = {
 };
 
 // Testing limit for job routes (configurable via env)
-const ROUTES_TEST_LIMIT = Number(process.env.ROUTES_TEST_LIMIT || process.env.VITE_ROUTES_TEST_LIMIT || '200');
+const ROUTES_TEST_LIMIT = Number(process.env.ROUTES_TEST_LIMIT || process.env.VITE_ROUTES_TEST_LIMIT || '10');
 
 async function generateRoutes() {
   console.log('🚀 Generating static routes...');

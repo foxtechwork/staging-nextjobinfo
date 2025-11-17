@@ -229,7 +229,7 @@ export default function JobDetails() {
     const description = `Looking for the latest ${recruitmentBoard} Recruitment ${currentYear}? Explore complete details for ${state} candidates including total vacancies (${totalVacancies}), required qualifications (${qualification}), job category (${jobCategory}), selection process, and step-by-step application guide. Don't miss the last date to apply: ${lastDate}. Stay updated with verified, real-time government job notifications and apply online now with nextjobinfo.com`;
 
     const canonicalUrl = `https://nextjobinfo.com/job/${pageLink}`;
-    const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.png';
+    const imageUrl = 'https://nextjobinfo.com//share-jobs-with-nextjobinfo.png';
 
     return (
       <Helmet>
