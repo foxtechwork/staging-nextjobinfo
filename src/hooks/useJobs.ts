@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
 
@@ -69,8 +69,8 @@ export const useJobs = (options?: any) => {
     },
     enabled: !ssgJobs, // Disable query if SSG data exists
     initialData: ssgJobs,
-    staleTime: ssgJobs ? Infinity : 0, // Keep SSG data fresh
-    gcTime: ssgJobs ? Infinity : 5 * 60 * 1000,
+    staleTime: Infinity, // ALWAYS keep data fresh - never refetch once loaded
+    gcTime: Infinity, // Never garbage collect - keep for entire session
     ...options,
   });
 };
@@ -193,15 +193,24 @@ export const useJobSearch = (searchQuery: string, filters: {
   experienceTags?: string[];
   isStateSpecific?: boolean;
 }) => {
+  // Try to get data from: 1) SSG window object, 2) base jobs query cache
+  const queryClient = useQueryClient();
+  
   const ssgJobs = typeof window !== 'undefined' && window.__SSG_DATA__?.jobs 
     ? window.__SSG_DATA__.jobs 
     : undefined;
+  
+  // Fallback to base jobs query if SSG data not available (handles navigation)
+  const cachedJobs = !ssgJobs ? queryClient.getQueryData<Job[]>(['jobs']) : undefined;
+  const sourceJobs = ssgJobs || cachedJobs;
 
-  const filteredSsgData = ssgJobs ? applyFilters(ssgJobs, searchQuery, filters) : undefined;
+  // Pre-filter data if available - this becomes initialData
+  const filteredData = sourceJobs ? applyFilters(sourceJobs, searchQuery, filters) : undefined;
 
   return useQuery({
     queryKey: ['job-search', searchQuery, filters],
     queryFn: async () => {
+      // Only runs if no cached or SSG data exists
       let query = supabase
         .from('jobs_data')
         .select('*')
@@ -218,10 +227,10 @@ export const useJobSearch = (searchQuery: string, filters: {
 
       return applyFilters(data as Job[], searchQuery, filters);
     },
-    enabled: !ssgJobs, // Disable if SSG data exists
-    initialData: filteredSsgData,
-    staleTime: ssgJobs ? Infinity : 0, // Keep SSG data fresh forever
-    gcTime: ssgJobs ? Infinity : 5 * 60 * 1000, // Don't garbage collect SSG data
+    enabled: !filteredData, // Disable if we have filtered data
+    initialData: filteredData, // Use pre-filtered data
+    staleTime: Infinity, // Never refetch - data is static during session
+    gcTime: Infinity, // Never garbage collect
   });
 };
 

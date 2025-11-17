@@ -33,49 +33,23 @@ export function HydrateData({ children }: { children: ReactNode }) {
         });
       }
 
-      // Hydrate jobs data with comprehensive query key coverage
+      // Hydrate jobs data - store in window for direct access by hooks
       if (data.jobs) {
-        // Set base jobs data with staleTime to prevent refetch
+        // CRITICAL: Keep raw data in window.__SSG_DATA__ for hooks to access
+        // Hooks use this directly via initialData, bypassing React Query cache issues
+        
+        // Still hydrate base query for backwards compatibility
         queryClient.setQueryData(['jobs'], data.jobs);
         queryClient.setQueryDefaults(['jobs'], {
           staleTime: Infinity,
           gcTime: Infinity,
         });
         
-        // Set for various search query patterns to ensure data is available
-        // regardless of how the page is accessed (direct URL or navigation)
-        const commonFilterPatterns = [
-          {},
-          { category: 'All India Govt Jobs' },
-          { isStateSpecific: true },
-        ];
-        
-        // Set data for all common filter patterns
-        commonFilterPatterns.forEach(filters => {
-          queryClient.setQueryData(['job-search', '', filters], data.jobs);
+        // Set query defaults for job-search queries to use SSG data with infinite stale time
+        queryClient.setQueryDefaults(['job-search'], {
+          staleTime: Infinity,
+          gcTime: Infinity,
         });
-        
-        // If we have state-specific data in the route, hydrate for that state too
-        const pathMatch = window.location.pathname.match(/\/state-jobs\/([^/]+)/);
-        if (pathMatch) {
-          const stateCode = pathMatch[1];
-          const stateNames: Record<string, string> = {
-            ap: "Andhra Pradesh", ar: "Arunachal Pradesh", as: "Assam", br: "Bihar",
-            cg: "Chhattisgarh", ga: "Goa", gj: "Gujarat", hr: "Haryana",
-            hp: "Himachal Pradesh", jh: "Jharkhand", ka: "Karnataka", kl: "Kerala",
-            mp: "Madhya Pradesh", mh: "Maharashtra", mn: "Manipur", ml: "Meghalaya",
-            mz: "Mizoram", nl: "Nagaland", or: "Odisha", pb: "Punjab",
-            rj: "Rajasthan", sk: "Sikkim", tn: "Tamil Nadu", tg: "Telangana",
-            tr: "Tripura", up: "Uttar Pradesh", uk: "Uttarakhand", wb: "West Bengal",
-            dl: "Delhi", ch: "Chandigarh", py: "Puducherry", jk: "Jammu & Kashmir",
-            la: "Ladakh", an: "Andaman & Nicobar", dn: "Dadra & Nagar Haveli",
-            dd: "Daman & Diu", ld: "Lakshadweep"
-          };
-          const stateName = stateNames[stateCode];
-          if (stateName) {
-            queryClient.setQueryData(['job-search', '', { state: stateName, isStateSpecific: true }], data.jobs);
-          }
-        }
       }
 
       // Hydrate specific job data

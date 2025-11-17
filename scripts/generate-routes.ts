@@ -69,6 +69,9 @@ const categoryMapping: Record<string, string> = {
   "law": "Law"
 };
 
+// Testing limit for job routes (configurable via env)
+const ROUTES_TEST_LIMIT = Number(process.env.ROUTES_TEST_LIMIT || process.env.VITE_ROUTES_TEST_LIMIT || '200');
+
 async function generateRoutes() {
   console.log('🚀 Generating static routes...');
   
@@ -115,7 +118,8 @@ async function generateRoutes() {
       .from('jobs_data')
       .select('page_link')
       .eq('is_active', true)
-      .not('page_link', 'is', null);
+      .not('page_link', 'is', null)
+      .limit(ROUTES_TEST_LIMIT);
 
     if (error) {
       console.error('❌ Error fetching jobs:', error);

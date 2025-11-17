@@ -122,7 +122,7 @@ function getRouteOutputPath(route: string): string {
 // SSG persistent cache to survive client rebuilds (which wipes dist/client)
 const CACHE_DIR = path.resolve(process.cwd(), 'dist/ssg-cache');
 // Bump this version when head/helmet injection logic changes to force a one-time full rebuild
-const CACHE_VERSION = 'v3-helmet-ssgdata-2025-11-16';
+const CACHE_VERSION = 'v5-jobs-cache-fix-2025-11-17';
 const VERSION_FILE = path.resolve(CACHE_DIR, 'version.json');
 
 function getCacheOutputPath(route: string): string {
