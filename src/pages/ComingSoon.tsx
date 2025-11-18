@@ -26,7 +26,7 @@ export default function ComingSoon() {
         <meta property="og:url" content={`${window.location.origin}/admit-cards`} />
         <meta property="og:title" content="Coming Soon - Exam Alerts | NextJobInfo Government Jobs" />
         <meta property="og:description" content="New features coming soon on NextJobInfo - Exam alerts, admit cards, results, answer keys, and real-time notifications. Stay tuned for comprehensive exam updates." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -36,7 +36,7 @@ export default function ComingSoon() {
         <meta name="twitter:url" content={`${window.location.origin}/admit-cards`} />
         <meta name="twitter:title" content="Coming Soon - Exam Alerts | NextJobInfo Government Jobs" />
         <meta name="twitter:description" content="New features coming soon on NextJobInfo - Exam alerts, admit cards, results, answer keys, and real-time notifications. Stay tuned for comprehensive exam updates." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
       </Helmet>
       
       <div className="min-h-screen flex flex-col">

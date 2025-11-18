@@ -69,8 +69,8 @@ const categoryMapping: Record<string, string> = {
   "law": "Law"
 };
 
-// Testing limit for job routes (configurable via env)
-const ROUTES_TEST_LIMIT = Number(process.env.ROUTES_TEST_LIMIT || process.env.VITE_ROUTES_TEST_LIMIT || '10');
+// 🧪 TESTING MODE: Comment out the line below to generate ALL job routes
+// const TESTING_LIMIT = 10;
 
 async function generateRoutes() {
   console.log('🚀 Generating static routes...');
@@ -114,12 +114,19 @@ async function generateRoutes() {
   // Fetch all job page links from database
   console.log('💼 Fetching job routes from database...');
   try {
-    const { data: jobs, error } = await supabase
+    let query = supabase
       .from('jobs_data')
       .select('page_link')
       .eq('is_active', true)
-      .not('page_link', 'is', null)
-      .limit(ROUTES_TEST_LIMIT);
+      .not('page_link', 'is', null);
+    
+    // Apply limit only if TESTING_LIMIT is defined
+    if (typeof TESTING_LIMIT !== 'undefined') {
+      query = query.limit(TESTING_LIMIT);
+      console.log(`⚠️  TESTING MODE: Limited to ${TESTING_LIMIT} job routes`);
+    }
+    
+    const { data: jobs, error } = await query;
 
     if (error) {
       console.error('❌ Error fetching jobs:', error);

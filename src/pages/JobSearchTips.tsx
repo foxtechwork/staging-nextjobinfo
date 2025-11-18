@@ -92,7 +92,7 @@ const JobSearchTips = () => {
         <meta property="og:url" content={`${window.location.origin}/tips`} />
         <meta property="og:title" content="Government Job Search Tips 2025 - Expert Advice | NextJobInfo" />
         <meta property="og:description" content="Expert job search tips for government positions. Learn strategies to find sarkari naukri, apply online, prepare for exams, and succeed in government job applications." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -102,7 +102,7 @@ const JobSearchTips = () => {
         <meta name="twitter:url" content={`${window.location.origin}/tips`} />
         <meta name="twitter:title" content="Government Job Search Tips 2025 - Expert Advice | NextJobInfo" />
         <meta name="twitter:description" content="Expert job search tips for government positions. Learn strategies to find sarkari naukri, apply online, prepare for exams, and succeed in government job applications." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

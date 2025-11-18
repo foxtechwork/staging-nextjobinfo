@@ -23,7 +23,7 @@ const Terms = () => {
         <meta property="og:url" content={`${window.location.origin}/terms`} />
         <meta property="og:title" content="Terms of Service | NextJobInfo - User Agreement & Conditions" />
         <meta property="og:description" content="Read NextJobInfo Terms of Service - User agreement, service conditions, usage policy, and legal terms for accessing government job alerts and information." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -33,7 +33,7 @@ const Terms = () => {
         <meta name="twitter:url" content={`${window.location.origin}/terms`} />
         <meta name="twitter:title" content="Terms of Service | NextJobInfo - User Agreement & Conditions" />
         <meta name="twitter:description" content="Read NextJobInfo Terms of Service - User agreement, service conditions, usage policy, and legal terms for accessing government job alerts and information." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

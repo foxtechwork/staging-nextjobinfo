@@ -82,7 +82,7 @@ const CareerGuidance = () => {
         <meta property="og:url" content={`${window.location.origin}/career`} />
         <meta property="og:title" content="Career Guidance for Government Jobs 2025 | NextJobInfo" />
         <meta property="og:description" content="Expert career guidance for government jobs. Get advice on civil services, banking, railways, teaching, and PSU careers. Plan your sarkari naukri path with NextJobInfo." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -92,7 +92,7 @@ const CareerGuidance = () => {
         <meta name="twitter:url" content={`${window.location.origin}/career`} />
         <meta name="twitter:title" content="Career Guidance for Government Jobs 2025 | NextJobInfo" />
         <meta name="twitter:description" content="Expert career guidance for government jobs. Get advice on civil services, banking, railways, teaching, and PSU careers. Plan your sarkari naukri path with NextJobInfo." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

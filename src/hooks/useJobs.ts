@@ -51,8 +51,8 @@ export interface JobDetail {
 }
 
 export const useJobs = (options?: any) => {
-  const ssgJobs = typeof window !== 'undefined' && window.__SSG_DATA__?.jobs 
-    ? window.__SSG_DATA__.jobs 
+  const ssgJobs = typeof window !== 'undefined' && Array.isArray(window.__SSG_DATA__?.jobs) && window.__SSG_DATA__!.jobs.length > 0
+    ? window.__SSG_DATA__!.jobs 
     : undefined;
 
   return useQuery({
@@ -67,7 +67,7 @@ export const useJobs = (options?: any) => {
       if (error) throw error;
       return data as Job[];
     },
-    enabled: !ssgJobs, // Disable query if SSG data exists
+    enabled: ssgJobs === undefined, // Disable query only when SSG has usable data
     initialData: ssgJobs,
     staleTime: Infinity, // ALWAYS keep data fresh - never refetch once loaded
     gcTime: Infinity, // Never garbage collect - keep for entire session

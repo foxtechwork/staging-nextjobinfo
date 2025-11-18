@@ -279,7 +279,7 @@ export default function Home() {
                             variant={selectedCategory === category ? "default" : "outline"}
                             size="sm"
                             onClick={() => handleCategoryChange(category)}
-                            className="text-xs sm:text-sm px-1.5 sm:px-2 md:px-3 py-2 font-medium transition-all duration-200 hover:scale-105 w-full whitespace-nowrap"
+                            className="text-xs sm:text-sm px-1 sm:px-2 md:px-3 py-2 font-medium transition-all duration-200 sm:hover:scale-105 w-full whitespace-normal break-words leading-tight min-h-[36px]"
                             aria-label={`Filter jobs by ${category}`}
                           >
                             {category.replace(" Jobs", "").trim()}

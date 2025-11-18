@@ -63,7 +63,7 @@ const Sitemap = () => {
         <meta property="og:url" content={`${window.location.origin}/sitemap`} />
         <meta property="og:title" content="Sitemap - All Pages | NextJobInfo Government Jobs Portal" />
         <meta property="og:description" content="Complete sitemap of NextJobInfo - Browse all government job pages, exam resources, career guidance, state-wise jobs, and categories. Find sarkari naukri opportunities easily." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -73,7 +73,7 @@ const Sitemap = () => {
         <meta name="twitter:url" content={`${window.location.origin}/sitemap`} />
         <meta name="twitter:title" content="Sitemap - All Pages | NextJobInfo Government Jobs Portal" />
         <meta name="twitter:description" content="Complete sitemap of NextJobInfo - Browse all government job pages, exam resources, career guidance, state-wise jobs, and categories. Find sarkari naukri opportunities easily." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

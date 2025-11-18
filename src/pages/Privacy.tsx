@@ -23,7 +23,7 @@ const Privacy = () => {
         <meta property="og:url" content={`${window.location.origin}/privacy`} />
         <meta property="og:title" content="Privacy Policy | NextJobInfo - Your Data Protection" />
         <meta property="og:description" content="NextJobInfo Privacy Policy - Learn how we protect your personal information and data. Read our privacy practices for job alerts, user data, and security measures." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -33,7 +33,7 @@ const Privacy = () => {
         <meta name="twitter:url" content={`${window.location.origin}/privacy`} />
         <meta name="twitter:title" content="Privacy Policy | NextJobInfo - Your Data Protection" />
         <meta name="twitter:description" content="NextJobInfo Privacy Policy - Learn how we protect your personal information and data. Read our privacy practices for job alerts, user data, and security measures." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

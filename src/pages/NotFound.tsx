@@ -17,14 +17,14 @@ const NotFound = () => {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="404 - Page Not Found | Next Job Info" />
         <meta property="og:description" content="The page you are looking for could not be found. Return to Next Job Info homepage to find latest government job opportunities." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:site_name" content="NextJobInfo" />
         
         {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="404 - Page Not Found | Next Job Info" />
         <meta name="twitter:description" content="The page you are looking for could not be found. Return to Next Job Info homepage to find latest government job opportunities." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
       </Helmet>
       
       <div className="min-h-screen flex flex-col bg-background">

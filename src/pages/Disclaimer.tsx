@@ -23,7 +23,7 @@ const Disclaimer = () => {
         <meta property="og:url" content={`${window.location.origin}/disclaimer`} />
         <meta property="og:title" content="Disclaimer | NextJobInfo - Important Legal Information" />
         <meta property="og:description" content="NextJobInfo Disclaimer - Important information about job listings, third-party content, accuracy of information, and limitation of liability. Read before using our services." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -33,7 +33,7 @@ const Disclaimer = () => {
         <meta name="twitter:url" content={`${window.location.origin}/disclaimer`} />
         <meta name="twitter:title" content="Disclaimer | NextJobInfo - Important Legal Information" />
         <meta name="twitter:description" content="NextJobInfo Disclaimer - Important information about job listings, third-party content, accuracy of information, and limitation of liability. Read before using our services." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">

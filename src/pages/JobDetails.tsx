@@ -229,7 +229,7 @@ export default function JobDetails() {
     const description = `Looking for the latest ${recruitmentBoard} Recruitment ${currentYear}? Explore complete details for ${state} candidates including total vacancies (${totalVacancies}), required qualifications (${qualification}), job category (${jobCategory}), selection process, and step-by-step application guide. Don't miss the last date to apply: ${lastDate}. Stay updated with verified, real-time government job notifications and apply online now with nextjobinfo.com`;
 
     const canonicalUrl = `https://nextjobinfo.com/job/${pageLink}`;
-    const imageUrl = 'https://nextjobinfo.com//share-jobs-with-nextjobinfo.png';
+    const imageUrl = 'https://nextjobinfo.com/share-jobs-with-nextjobinfo.png';
 
     return (
       <Helmet>
@@ -468,7 +468,7 @@ export default function JobDetails() {
                           <Badge 
                             key={index} 
                             variant="secondary"
-                            className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors px-3 py-1.5 text-sm"
+                            className="bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 transition-colors px-3 py-1.5 text-sm break-all whitespace-normal max-w-full"
                           >
                             {tag}
                           </Badge>

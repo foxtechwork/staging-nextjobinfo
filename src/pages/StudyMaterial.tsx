@@ -23,7 +23,7 @@ const StudyMaterial = () => {
         <meta property="og:url" content={`${window.location.origin}/study-material`} />
         <meta property="og:title" content="Study Material - Coming Soon | Next Job Info" />
         <meta property="og:description" content="Free study material for government job exams coming soon. Stay tuned for comprehensive study resources for SSC, Banking, Railway, UPSC, and other government job preparations." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -33,7 +33,7 @@ const StudyMaterial = () => {
         <meta name="twitter:url" content={`${window.location.origin}/study-material`} />
         <meta name="twitter:title" content="Study Material - Coming Soon | Next Job Info" />
         <meta name="twitter:description" content="Free study material for government job exams coming soon. Stay tuned for comprehensive study resources for SSC, Banking, Railway, UPSC, and other government job preparations." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
       </Helmet>
 
       <Header />

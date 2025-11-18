@@ -26,7 +26,7 @@ const Contact = () => {
         <meta property="og:url" content={`${window.location.origin}/contact`} />
         <meta property="og:title" content="Contact Us - Get in Touch | NextJobInfo Support" />
         <meta property="og:description" content="Contact NextJobInfo support team for help with government job alerts, application queries, and career guidance. Reach us via email, phone, or contact form." />
-        <meta property="og:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta property="og:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:site_name" content="NextJobInfo" />
@@ -36,7 +36,7 @@ const Contact = () => {
         <meta name="twitter:url" content={`${window.location.origin}/contact`} />
         <meta name="twitter:title" content="Contact Us - Get in Touch | NextJobInfo Support" />
         <meta name="twitter:description" content="Contact NextJobInfo support team for help with government job alerts, application queries, and career guidance. Reach us via email, phone, or contact form." />
-        <meta name="twitter:image" content={`${window.location.origin}/share-jobs-with-nextjobinfo.webp`} />
+        <meta name="twitter:image" content={`${window.location.origin}//share-jobs-with-nextjobinfo.webp`} />
         
         {/* BreadcrumbList */}
         <script type="application/ld+json">
