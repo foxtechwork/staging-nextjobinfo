@@ -89,6 +89,15 @@ export default function Home() {
       navigate("/state-selection");
       return;
     }
+    
+    // Prevent redundant updates if same category is clicked
+    if (category === selectedCategory) {
+      // Force a re-render by toggling to trigger fresh filtering
+      setSearchQuery("");
+      setActiveSearchQuery("");
+      return;
+    }
+    
     setSelectedCategory(category);
     // Reset search when changing categories
     setSearchQuery("");
@@ -276,7 +285,7 @@ export default function Home() {
         {/* Main categories */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 w-full">
           {[
-            "All India",
+            "All India Jobs Category",
             "Police/Defence Jobs",
             "Bank Jobs",
             "Teaching Jobs",

@@ -70,7 +70,7 @@ const categoryMapping: Record<string, string> = {
 };
 
 // 🧪 TESTING MODE: Comment out the line below to generate ALL job routes
-const TESTING_LIMIT = 10;
+// const TESTING_LIMIT = 10;
 
 async function generateRoutes() {
   console.log('🚀 Generating static routes...');
