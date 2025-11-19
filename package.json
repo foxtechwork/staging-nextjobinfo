@@ -9,11 +9,12 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
+    "generate-sitemap": "tsx scripts/generate-sitemap.ts",
     "generate-routes": "tsx scripts/generate-routes.ts",
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/ssg/entry-server.tsx --outDir dist/server",
     "prerender": "tsx scripts/prerender.ts",
-    "build:ssg": "npm run generate-routes && npm run build:client && npm run build:server && npm run prerender",
+    "build:ssg": "npm run generate-routes && npm run build:client && npm run build:server && npm run prerender && npm run generate-sitemap",
     "serve:ssg": "npx serve dist/client"
   },
   "dependencies": {

@@ -6,38 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
 import { useJobs, useJobsStats, useJobSearch } from "@/hooks/useJobs";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
-
-const jobCategories = [
-  "All India Govt Jobs",
-  "State Govt Jobs", 
-  "Bank Jobs",
-  "Teaching Jobs",
-  "Engineering Jobs",
-  "Railway Jobs",
-  "Police/Defence Jobs"
-];
-
+const jobCategories = ["All India Govt Jobs", "State Govt Jobs", "Bank Jobs", "Teaching Jobs", "Engineering Jobs", "Railway Jobs", "Police/Defence Jobs"];
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -46,19 +23,24 @@ export default function Home() {
   const [selectedState, setSelectedState] = useState<string | undefined>();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  const { data: stats, isLoading: statsLoading } = useJobsStats();
-  
+  const {
+    data: stats,
+    isLoading: statsLoading
+  } = useJobsStats();
+
   // Scroll to top instantly when navigating to home page
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
   }, [location.pathname]);
-  
+
   // Initialize from URL params
   useEffect(() => {
     const categoryParam = searchParams.get('category');
     const stateParam = searchParams.get('state');
-    
     if (categoryParam && jobCategories.includes(categoryParam)) {
       setSelectedCategory(categoryParam);
     }
@@ -66,15 +48,16 @@ export default function Home() {
       setSelectedState(stateParam);
     }
   }, [searchParams]);
-  
+
   // Handle State Govt Jobs category differently - use activeSearchQuery instead of searchQuery
-  const { data: filteredJobs = [], isLoading: jobsLoading, error: jobsError } = useJobSearch(
-    activeSearchQuery, 
-    selectedCategory === "State Govt Jobs" ? {} : {
-      category: selectedCategory,
-      state: selectedState
-    }
-  );
+  const {
+    data: filteredJobs = [],
+    isLoading: jobsLoading,
+    error: jobsError
+  } = useJobSearch(activeSearchQuery, selectedCategory === "State Govt Jobs" ? {} : {
+    category: selectedCategory,
+    state: selectedState
+  });
 
   // Implement pagination - Show only 50 jobs per page (reduces DOM from 34,293 to ~2,000 elements!)
   const pagination = usePagination(filteredJobs, 50);
@@ -83,84 +66,79 @@ export default function Home() {
   useEffect(() => {
     pagination.resetPage();
   }, [selectedCategory, activeSearchQuery]);
-
   const handleCategoryChange = (category: string) => {
     if (category === "State Govt Jobs") {
       navigate("/state-selection");
       return;
     }
-    
-    // Prevent redundant updates if same category is clicked
-    if (category === selectedCategory) {
-      // Force a re-render by toggling to trigger fresh filtering
-      setSearchQuery("");
-      setActiveSearchQuery("");
-      return;
-    }
-    
+
+    // Always update state and reset filters to ensure proper re-rendering
     setSelectedCategory(category);
-    // Reset search when changing categories
     setSearchQuery("");
     setActiveSearchQuery("");
-    // Update URL params to reflect selected category
-    setSearchParams({ category: category });
+    setSearchParams({
+      category: category
+    });
+
+    // Force pagination reset
+    pagination.resetPage();
   };
-
-  const statsData = [
-    { icon: Briefcase, label: "Active Jobs", value: stats?.totalJobs?.toString() || "0", color: "text-primary" },
-    { icon: Users, label: "Total Applications", value: stats?.totalApplications ? `${Math.floor(stats.totalApplications / 1000)}K+` : "0", color: "text-job-new" },
-    { icon: Clock, label: "This Week", value: stats?.thisWeekJobs?.toString() || "0", color: "text-job-featured" },
-    { icon: TrendingUp, label: "Success Rate", value: `${stats?.successRate || 0}%`, color: "text-job-urgent" }
-  ];
-
+  const statsData = [{
+    icon: Briefcase,
+    label: "Active Jobs",
+    value: stats?.totalJobs?.toString() || "0",
+    color: "text-primary"
+  }, {
+    icon: Users,
+    label: "Total Applications",
+    value: stats?.totalApplications ? `${Math.floor(stats.totalApplications / 1000)}K+` : "0",
+    color: "text-job-new"
+  }, {
+    icon: Clock,
+    label: "This Week",
+    value: stats?.thisWeekJobs?.toString() || "0",
+    color: "text-job-featured"
+  }, {
+    icon: TrendingUp,
+    label: "Success Rate",
+    value: `${stats?.successRate || 0}%`,
+    color: "text-job-urgent"
+  }];
   const formatDate = (dateString: string, fallbackDate?: string) => {
     // Use post_date if available, otherwise use updated_at
     const dateToUse = dateString || fallbackDate;
-    
     if (!dateToUse) return "N/A";
-    
     const date = new Date(dateToUse);
-    
+
     // Check if date is valid and not the epoch date (1970)
     if (isNaN(date.getTime()) || date.getFullYear() < 2000) {
       return "N/A";
     }
-    
     return date.toLocaleDateString('en-IN', {
       day: 'numeric',
       month: 'short',
       year: 'numeric'
     });
   };
-
   const getDateColor = (dateString: string) => {
     if (!dateString) return "text-muted-foreground";
-    
     const lastDate = new Date(dateString);
     const today = new Date();
     const diffTime = lastDate.getTime() - today.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
     if (diffDays <= 5) return "text-destructive"; // Red
     if (diffDays <= 10) return "text-warning"; // Orange  
     return "text-success"; // Green
   };
-
   const formatQualification = (text: string): string => {
     if (!text || text === "Not Specified") return text;
-    
     const maxLength = 100;
-    
     if (text.length > maxLength) {
       return text.substring(0, maxLength) + " and more...";
     }
-    
     return text;
   };
-
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <section className="bg-gradient-hero text-white py-8 sm:py-12" role="banner">
         <div className="container mx-auto px-3 sm:px-4">
@@ -179,28 +157,22 @@ export default function Home() {
                   <Label htmlFor="hero-search-input" className="sr-only">
                     Search for government jobs by title, location, or organization
                   </Label>
-                  <Input
-                    id="hero-search-input"
-                    type="search"
-                    placeholder="Search jobs..."
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setActiveSearchQuery(e.target.value);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        setActiveSearchQuery(searchQuery);
-                        const resultsSection = document.querySelector('.jobs-results-section');
-                        if (resultsSection) {
-                          resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          setSearchQuery('');
-                        }
-                      }
-                    }}
-                    className="bg-white/20 border-white/30 text-white placeholder:text-white/70 h-10 sm:h-11"
-                    aria-describedby="search-hint search-description"
-                  />
+                  <Input id="hero-search-input" type="search" placeholder="Search jobs..." value={searchQuery} onChange={e => {
+                  setSearchQuery(e.target.value);
+                  setActiveSearchQuery(e.target.value);
+                }} onKeyDown={e => {
+                  if (e.key === 'Enter') {
+                    setActiveSearchQuery(searchQuery);
+                    const resultsSection = document.querySelector('.jobs-results-section');
+                    if (resultsSection) {
+                      resultsSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                      });
+                      setSearchQuery('');
+                    }
+                  }
+                }} className="bg-white/20 border-white/30 text-white placeholder:text-white/70 h-10 sm:h-11" aria-describedby="search-hint search-description" />
                   <span id="search-hint" className="sr-only">Press Enter to search</span>
                   <span id="search-description" className="sr-only">
                     Enter keywords to find government jobs by title, location, or organization name
@@ -211,36 +183,28 @@ export default function Home() {
                     Filter jobs by category
                   </Label>
                   <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger 
-                      id="hero-category-select"
-                      className="bg-white/20 border-white/30 text-white h-10 sm:h-11" 
-                      aria-describedby="category-description"
-                    >
+                    <SelectTrigger id="hero-category-select" className="bg-white/20 border-white/30 text-white h-10 sm:h-11" aria-describedby="category-description">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {jobCategories.map((category) => (
-                        <SelectItem key={category} value={category}>{category}</SelectItem>
-                      ))}
+                      {jobCategories.map(category => <SelectItem key={category} value={category}>{category}</SelectItem>)}
                     </SelectContent>
                   </Select>
                   <span id="category-description" className="sr-only">
                     Select a category to filter government jobs by type such as Banking, Railway, or Teaching
                   </span>
                 </div>
-                <Button 
-                  className="bg-white text-primary hover:bg-white/90 h-10 sm:h-11"
-                  type="button"
-                  onClick={() => {
-                    setActiveSearchQuery(searchQuery);
-                    const resultsSection = document.querySelector('.jobs-results-section');
-                    if (resultsSection) {
-                      resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      setSearchQuery('');
-                    }
-                  }}
-                  aria-label="Search for government jobs"
-                >
+                <Button className="bg-white text-primary hover:bg-white/90 h-10 sm:h-11" type="button" onClick={() => {
+                setActiveSearchQuery(searchQuery);
+                const resultsSection = document.querySelector('.jobs-results-section');
+                if (resultsSection) {
+                  resultsSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                  setSearchQuery('');
+                }
+              }} aria-label="Search for government jobs">
                   <Search className="h-4 w-4 sm:mr-2" aria-hidden="true" />
                   <span className="hidden sm:inline">Search</span>
                 </Button>
@@ -267,8 +231,8 @@ export default function Home() {
             <div className="w-full lg:w-[62%] flex-shrink-0 px-3">
               {/* Job Category Selector */}
 
-<Card className="mb-3 sm:mb-4 px-2 sm:px-4">
-  <CardHeader className="pb-2 sm:pb-3 px-1 sm:px-2">
+            <Card className="mb-3 sm:mb-4 px-2 sm:px-4">
+  <CardHeader className="pb-2 sm:pb-3 sm:px-2 px-px">
     <div className="flex flex-col gap-3 sm:gap-4">
       <div className="text-center">
         <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
@@ -284,45 +248,21 @@ export default function Home() {
         
         {/* Main categories */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 w-full">
-          {[
-            "All India Jobs Category",
-            "Police/Defence Jobs",
-            "Bank Jobs",
-            "Teaching Jobs",
-            "Engineering Jobs",
-            "Railway Jobs",
-          ].map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? "default" : "outline"}
-              size="sm"
-              onClick={() => handleCategoryChange(category)}
-              className="text-xs sm:text-sm px-1 sm:px-2 md:px-3 py-2 font-medium transition-all duration-200 sm:hover:scale-105 w-full whitespace-normal break-words leading-tight min-h-[36px]"
-              aria-label={`Filter jobs by ${category}`}
-            >
+          {["All India Govt Jobs", "Police/Defence Jobs", "Bank Jobs", "Teaching Jobs", "Engineering Jobs", "Railway Jobs"].map(category => <Button key={category} variant={selectedCategory === category ? "default" : "outline"} size="sm" onClick={() => handleCategoryChange(category)} aria-label={`Filter jobs by ${category}`} className="text-xs sm:text-sm sm:px-2 font-medium transition-all duration-200 sm:hover:scale-105 w-full whitespace-nowrap leading-tight min-h-[36px] text-center md:px-[50px] mx-0 py-0 px-[50px] my-[5px]">
               {category.replace(" Jobs", "").trim()}
-            </Button>
-          ))}
+            </Button>)}
         </div>
 
         {/* State Govt Jobs */}
         <div className="flex justify-center pt-1 w-full">
-          <Button
-            variant={
-              selectedCategory === "State Govt Jobs" ? "default" : "secondary"
-            }
-            size="sm"
-            onClick={() => handleCategoryChange("State Govt Jobs")}
-            className="text-xs sm:text-sm px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400/30 shadow-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl w-full sm:w-auto"
-            aria-label="Browse State Government Jobs by selecting your state"
-          >
+          <Button variant={selectedCategory === "State Govt Jobs" ? "default" : "secondary"} size="sm" onClick={() => handleCategoryChange("State Govt Jobs")} className="text-xs sm:text-sm px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400/30 shadow-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl w-full sm:w-auto" aria-label="Browse State Government Jobs by selecting your state">
             State Govt Jobs
           </Button>
         </div>
       </div>
     </div>
   </CardHeader>
-</Card>
+            </Card>
 
 
 
@@ -330,31 +270,23 @@ export default function Home() {
               {/* Jobs Table/Cards */}
               <Card className="jobs-results-section">
                 <CardContent className="p-0">
-                  {jobsLoading ? (
-                    <div className="p-3 sm:p-4 space-y-3" aria-busy="true" aria-live="polite">
+                  {jobsLoading ? <div className="p-3 sm:p-4 space-y-3" aria-busy="true" aria-live="polite">
                       <p className="sr-only">Loading job listings</p>
-                      {[...Array(5)].map((_, i) => (
-                        <div key={i} className="flex items-center space-x-3">
+                      {[...Array(5)].map((_, i) => <div key={i} className="flex items-center space-x-3">
                           <Skeleton className="h-10 w-10 rounded-full" />
                           <div className="space-y-2 flex-1">
                             <Skeleton className="h-3 w-[60%]" />
                             <Skeleton className="h-3 w-[40%]" />
                           </div>
                           <Skeleton className="h-6 w-16" />
-                        </div>
-                      ))}
-                    </div>
-                  ) : filteredJobs.length === 0 ? (
-                    <div className="p-6 text-center" role="alert">
+                        </div>)}
+                    </div> : filteredJobs.length === 0 ? <div className="p-6 text-center" role="alert">
                       <p className="text-muted-foreground">No jobs found matching your criteria.</p>
-                    </div>
-                  ) : (
-              <>
+                    </div> : <>
                 {/* Mobile Card View */}
                 <div className="md:hidden">
                   <div className="divide-y divide-border">
-                    {pagination.items.map((job) => (
-                      <div key={job.job_id} className="p-4 hover:bg-muted/50 transition-all duration-200">
+                    {pagination.items.map(job => <div key={job.job_id} className="p-4 hover:bg-muted/50 transition-all duration-200">
                         <Link to={`/job/${job.page_link || job.job_id}`}>
                           <h3 className="font-bold text-foreground text-base leading-tight hover:text-primary transition-colors mb-3">
                             {job.exam_or_post_name}
@@ -392,7 +324,7 @@ export default function Home() {
                             <div>
                               <div className="text-xs text-muted-foreground/80 mb-0.5">Location</div>
                               <span className="text-foreground font-medium">
-                                {job.Is_All_India ? "All India" : (job.state || "All India")}
+                                {job.Is_All_India ? "All India" : job.state || "All India"}
                               </span>
                             </div>
                           </div>
@@ -412,8 +344,7 @@ export default function Home() {
                             </Link>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      </div>)}
                   </div>
                 </div>
 
@@ -431,8 +362,7 @@ export default function Home() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {pagination.items.map((job) => (
-                        <TableRow key={job.job_id} className="hover:bg-muted/30 transition-colors">
+                      {pagination.items.map(job => <TableRow key={job.job_id} className="hover:bg-muted/30 transition-colors">
                           <TableCell className="py-4 px-4 w-[40%]">
                             <div className="space-y-2">
                               <Link to={`/job/${job.page_link || job.job_id}`}>
@@ -443,11 +373,9 @@ export default function Home() {
                               <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
                                 <Calendar className="h-4 w-4 flex-shrink-0" />
                                 <span className="font-medium">Posted: {formatDate(job.post_date, job.updated_at)}</span>
-                                {job.advt_no && (
-                                  <span className="font-semibold text-primary ml-2 truncate">
+                                {job.advt_no && <span className="font-semibold text-primary ml-2 truncate">
                                     {job.advt_no}
-                                  </span>
-                                )}
+                                  </span>}
                               </div>
                             </div>
                           </TableCell>
@@ -465,7 +393,7 @@ export default function Home() {
                             <div className="flex items-center justify-center gap-1">
                               <MapPin className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                               <span className="text-sm break-words">
-                                {job.Is_All_India ? "All India" : (job.state || "All India")}
+                                {job.Is_All_India ? "All India" : job.state || "All India"}
                               </span>
                             </div>
                           </TableCell>
@@ -484,25 +412,16 @@ export default function Home() {
                               </Button>
                             </Link>
                           </TableCell>
-                        </TableRow>
-                      ))}
+                        </TableRow>)}
                     </TableBody>
                   </Table>
                 </div>
 
                 {/* Pagination Controls */}
                 <div className="px-4 pb-4">
-                  <PaginationControls
-                    currentPage={pagination.currentPage}
-                    totalPages={pagination.totalPages}
-                    onPageChange={pagination.goToPage}
-                    totalItems={pagination.totalItems}
-                    startIndex={pagination.startIndex}
-                    endIndex={pagination.endIndex}
-                  />
+                  <PaginationControls currentPage={pagination.currentPage} totalPages={pagination.totalPages} onPageChange={pagination.goToPage} totalItems={pagination.totalItems} startIndex={pagination.startIndex} endIndex={pagination.endIndex} />
                 </div>
-              </>
-            )}
+              </>}
               </CardContent>
             </Card>
             </div>
@@ -517,6 +436,5 @@ export default function Home() {
           </div>
         </div>
       </main>
-    </div>
-  );
+    </div>;
 }
