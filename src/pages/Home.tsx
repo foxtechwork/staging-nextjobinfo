@@ -257,52 +257,66 @@ export default function Home() {
             {/* Middle Content - 62% */}
             <div className="w-full lg:w-[62%] flex-shrink-0 px-3">
               {/* Job Category Selector */}
-              <Card className="mb-3 sm:mb-4">
-                <CardHeader className="pb-2 sm:pb-3 px-1 sm:px-2">
-                  <div className="flex flex-col gap-1.5 sm:gap-2">
-                    <div className="text-center">
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
-                        Browse Jobs by Category
-                      </h3>
-                      <CardTitle className="sr-only">
-                        {selectedCategory}
-                      </CardTitle>
-                    </div>
-                    
-                    {/* Category Layout */}
-                    <div className="flex flex-col items-center gap-1.5">
-                      {/* Main categories - Optimized grid for better width usage */}
-                      <div className="grid grid-cols-3 sm:grid-cols-6 gap-1.5 sm:gap-2 w-full">
-                        {["All India Govt Jobs", "Police/Defence Jobs", "Bank Jobs", "Teaching Jobs", "Engineering Jobs", "Railway Jobs"].map((category) => (
-                          <Button
-                            key={category}
-                            variant={selectedCategory === category ? "default" : "outline"}
-                            size="sm"
-                            onClick={() => handleCategoryChange(category)}
-                            className="text-xs sm:text-sm px-1 sm:px-2 md:px-3 py-2 font-medium transition-all duration-200 sm:hover:scale-105 w-full whitespace-normal break-words leading-tight min-h-[36px]"
-                            aria-label={`Filter jobs by ${category}`}
-                          >
-                            {category.replace(" Jobs", "").trim()}
-                          </Button>
-                        ))}
-                      </div>
-                      
-                      {/* State Govt Jobs - Full width on mobile */}
-                      <div className="flex justify-center pt-0.5 sm:pt-1 w-full">
-                        <Button
-                          variant={selectedCategory === "State Govt Jobs" ? "default" : "secondary"}
-                          size="sm"
-                          onClick={() => handleCategoryChange("State Govt Jobs")}
-                          className="text-xs sm:text-sm px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400/30 shadow-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl w-full sm:w-auto"
-                          aria-label="Browse State Government Jobs by selecting your state"
-                        >
-                          State Govt Jobs
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardHeader>
-              </Card>
+
+<Card className="mb-3 sm:mb-4 px-2 sm:px-4">
+  <CardHeader className="pb-2 sm:pb-3 px-1 sm:px-2">
+    <div className="flex flex-col gap-3 sm:gap-4">
+      <div className="text-center">
+        <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground">
+          Browse Jobs by Category
+        </h3>
+        <CardTitle className="sr-only">
+          {selectedCategory}
+        </CardTitle>
+      </div>
+
+      {/* Category Layout */}
+      <div className="flex flex-col items-center gap-3 sm:gap-4">
+        
+        {/* Main categories */}
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3 sm:gap-4 w-full">
+          {[
+            "All India",
+            "Police/Defence Jobs",
+            "Bank Jobs",
+            "Teaching Jobs",
+            "Engineering Jobs",
+            "Railway Jobs",
+          ].map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? "default" : "outline"}
+              size="sm"
+              onClick={() => handleCategoryChange(category)}
+              className="text-xs sm:text-sm px-1 sm:px-2 md:px-3 py-2 font-medium transition-all duration-200 sm:hover:scale-105 w-full whitespace-normal break-words leading-tight min-h-[36px]"
+              aria-label={`Filter jobs by ${category}`}
+            >
+              {category.replace(" Jobs", "").trim()}
+            </Button>
+          ))}
+        </div>
+
+        {/* State Govt Jobs */}
+        <div className="flex justify-center pt-1 w-full">
+          <Button
+            variant={
+              selectedCategory === "State Govt Jobs" ? "default" : "secondary"
+            }
+            size="sm"
+            onClick={() => handleCategoryChange("State Govt Jobs")}
+            className="text-xs sm:text-sm px-4 sm:px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white hover:from-emerald-700 hover:to-emerald-600 border-2 border-emerald-400/30 shadow-lg font-semibold transition-all duration-200 hover:scale-105 hover:shadow-xl w-full sm:w-auto"
+            aria-label="Browse State Government Jobs by selecting your state"
+          >
+            State Govt Jobs
+          </Button>
+        </div>
+      </div>
+    </div>
+  </CardHeader>
+</Card>
+
+
+
 
               {/* Jobs Table/Cards */}
               <Card className="jobs-results-section">
