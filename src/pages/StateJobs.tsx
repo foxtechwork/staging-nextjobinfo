@@ -22,6 +22,9 @@ import Footer from "@/components/layout/Footer";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightSidebar from "@/components/layout/RightSidebar";
 import { useJobSearch } from "@/hooks/useJobs";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
+import { getQualificationDisplay } from "@/lib/qualification-fallback";
 
 const stateNames: Record<string, string> = {
   ap: "Andhra Pradesh", ar: "Arunachal Pradesh", as: "Assam", br: "Bihar",
@@ -61,9 +64,18 @@ export default function StateJobs() {
     ? allFilteredJobs.filter(job => job.state === stateName && !job.Is_All_India)
     : allFilteredJobs;
 
-  // Separate state-specific and All India jobs for display with separator
-  const stateSpecificJobs = filteredJobs.filter(job => job.state === stateName && !job.Is_All_India);
-  const allIndiaJobs = filteredJobs.filter(job => job.Is_All_India);
+  // Implement pagination - 50 jobs per page
+  const pagination = usePagination(filteredJobs, 50);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    pagination.resetPage();
+  }, [showStateOnly, activeSearchQuery]);
+
+  // Get paginated items for state-specific and All India separation
+  const paginatedJobs = pagination.items;
+  const stateSpecificJobs = paginatedJobs.filter(job => job.state === stateName && !job.Is_All_India);
+  const allIndiaJobs = paginatedJobs.filter(job => job.Is_All_India);
 
   const formatDate = (dateString: string, fallbackDate?: string) => {
     // Use post_date if available, otherwise use updated_at
@@ -354,7 +366,7 @@ export default function StateJobs() {
                             <div>
                               <div className="text-xs text-muted-foreground/80 mb-0.5">Qualification</div>
                               <span className="text-foreground font-medium">
-                                {formatQualification(job.qualification || "Not Specified")}
+                                {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                               </span>
                             </div>
                           </div>
@@ -418,7 +430,7 @@ export default function StateJobs() {
                             <div>
                               <div className="text-xs text-muted-foreground/80 mb-0.5">Qualification</div>
                               <span className="text-foreground font-medium">
-                                {formatQualification(job.qualification || "Not Specified")}
+                                {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                               </span>
                             </div>
                           </div>
@@ -496,7 +508,7 @@ export default function StateJobs() {
                           </TableCell>
                           <TableCell className="py-4 px-2 text-center align-middle w-[12%]">
                             <span className="text-sm text-foreground font-medium whitespace-pre-line break-words line-clamp-3">
-                              {formatQualification(job.qualification || "Not Specified")}
+                              {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                             </span>
                           </TableCell>
                           <TableCell className="py-4 px-2 text-center align-middle w-[12%]">
@@ -555,7 +567,7 @@ export default function StateJobs() {
                           </TableCell>
                           <TableCell className="py-4 px-2 text-center align-middle w-[12%]">
                             <span className="text-sm text-foreground font-medium whitespace-pre-line break-words line-clamp-3">
-                              {formatQualification(job.qualification || "Not Specified")}
+                              {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                             </span>
                           </TableCell>
                           <TableCell className="py-4 px-2 text-center align-middle w-[12%]">
@@ -590,6 +602,18 @@ export default function StateJobs() {
             )}
           </CardContent>
         </Card>
+
+        {/* Pagination Controls */}
+        <div className="mt-4">
+          <PaginationControls
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            onPageChange={pagination.goToPage}
+            totalItems={pagination.totalItems}
+            startIndex={pagination.startIndex}
+            endIndex={pagination.endIndex}
+          />
+        </div>
             </div>
 
             {/* Right Sidebar - 17% */}

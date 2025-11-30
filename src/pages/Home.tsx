@@ -14,6 +14,7 @@ import RightSidebar from "@/components/layout/RightSidebar";
 import { useJobs, useJobsStats, useJobSearch } from "@/hooks/useJobs";
 import { usePagination } from "@/hooks/usePagination";
 import { PaginationControls } from "@/components/ui/pagination-controls";
+import { getQualificationDisplay } from "@/lib/qualification-fallback";
 const jobCategories = ["All India Govt Jobs", "State Govt Jobs", "Bank Jobs", "Teaching Jobs", "Engineering Jobs", "Railway Jobs", "Police/Defence Jobs"];
 export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -314,7 +315,7 @@ export default function Home() {
                             <div>
                               <div className="text-xs text-muted-foreground/80 mb-0.5">Qualification</div>
                               <span className="text-foreground font-medium">
-                                {formatQualification(job.qualification || "Not Specified")}
+                                {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                               </span>
                             </div>
                           </div>
@@ -386,7 +387,7 @@ export default function Home() {
                           </TableCell>
                           <TableCell className="text-center py-4 px-2">
                             <span className="text-sm whitespace-pre-line break-words">
-                              {formatQualification(job.qualification || "Not Specified")}
+                              {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                             </span>
                           </TableCell>
                           <TableCell className="text-center py-4 px-2">

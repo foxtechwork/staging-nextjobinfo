@@ -88,15 +88,9 @@ export const useOptimizedFilters = (
         if (!aIsStateSpecific && bIsStateSpecific) return 1;
         return 0;
       });
-    } else if (filters.category !== "State Govt Jobs") {
-      // Homepage: Show ONLY All India jobs
-      filteredData = filteredData.filter(job => job.Is_All_India === true);
-      filteredData.sort((a, b) => {
-        const dateA = new Date(a.post_date || a.updated_at).getTime();
-        const dateB = new Date(b.post_date || b.updated_at).getTime();
-        return dateB - dateA;
-      });
     } else {
+      // Homepage and all categories: Show ALL jobs (no filtering by Is_All_India)
+      // Sort by post_date descending - most recent jobs first
       filteredData.sort((a, b) => {
         const dateA = new Date(a.post_date || a.updated_at).getTime();
         const dateB = new Date(b.post_date || b.updated_at).getTime();

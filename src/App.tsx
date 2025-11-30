@@ -1,21 +1,20 @@
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
-import { QueryClientProvider, hydrate } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { PerformanceMonitor } from "./components/PerformanceMonitor";
-import { rootQueryClient } from "./RootLayout";
 
-// Critical page loaded immediately
+// Critical pages loaded immediately (not lazy)
 import Index from "./pages/Index";
+import JobDetails from "./pages/JobDetails";
 
 // Non-critical pages lazy loaded
 import { lazy } from 'react';
-const JobDetails = lazy(() => import("./pages/JobDetails"));
 const StateSelection = lazy(() => import("./pages/StateSelection"));
 const StateJobs = lazy(() => import("./pages/StateJobs"));
 const CategoryJobs = lazy(() => import("./pages/CategoryJobs"));
@@ -35,16 +34,25 @@ const Resume = lazy(() => import("./pages/Resume"));
 const StudyMaterial = lazy(() => import("./pages/StudyMaterial"));
 const MockTests = lazy(() => import("./pages/MockTests"));
 
-// Hydrate QueryClient from SSG dehydrated state on client-side
-if (typeof window !== 'undefined') {
-  const dehydratedState = (window as any).__REACT_QUERY_STATE__;
-  if (dehydratedState) {
-    hydrate(rootQueryClient, dehydratedState);
-    console.log('✅ React Query hydrated from SSG dehydrated state');
-  } else {
-    console.warn('⚠️ No dehydrated state found - running in development mode');
-  }
-}
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity, // SSG data never stales
+      gcTime: Infinity, // Keep in cache forever
+      retry: (failureCount, error: any) => {
+        if (error?.status >= 400 && error?.status < 500) return false;
+        return failureCount < 1; // Reduced retries
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      networkMode: 'offlineFirst', // Use cached data first
+    },
+    mutations: {
+      retry: 0,
+    },
+  },
+});
 
 // Loading fallback component
 const PageLoader = () => (
@@ -62,7 +70,7 @@ const App = () => {
   return (
     <ErrorBoundary>
       <PerformanceMonitor />
-      <QueryClientProvider client={rootQueryClient}>
+      <QueryClientProvider client={queryClient}>
         <HelmetProvider>
           <TooltipProvider>
             <Toaster />

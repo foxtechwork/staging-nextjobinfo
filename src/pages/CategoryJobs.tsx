@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Link } from "react-router-dom";
 import { useJobSearch } from "@/hooks/useJobs";
+import { usePagination } from "@/hooks/usePagination";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import LeftSidebar from "@/components/layout/LeftSidebar";
@@ -16,6 +18,7 @@ import RightSidebar from "@/components/layout/RightSidebar";
 import AdSenseAd from "@/components/ads/AdSenseAd";
 import { AdWrapper } from "@/components/ads/AdWrapper";
 import { ADS_CONFIG } from "@/config/ads";
+import { getQualificationDisplay } from "@/lib/qualification-fallback";
 
 const categoryMapping: { [key: string]: string } = {
   "central-government": "Central Government",
@@ -117,6 +120,14 @@ export default function CategoryJobs() {
     
     return searchMatch && tagMatch;
   }) || [];
+
+  // Implement pagination - 50 jobs per page
+  const pagination = usePagination(filteredJobs, 50);
+
+  // Reset pagination when search changes
+  useEffect(() => {
+    pagination.resetPage();
+  }, [searchQuery]);
 
   const formatDate = (dateString: string, fallbackDate?: string) => {
     // Use post_date if available, otherwise use updated_at
@@ -365,7 +376,7 @@ export default function CategoryJobs() {
                     <>
                       {/* Mobile Card View */}
                       <div className="md:hidden divide-y">
-                        {filteredJobs.map((job) => (
+                        {pagination.items.map((job) => (
                           <article key={job.job_id} className="py-3 hover:bg-muted/30 transition-colors">
                             <Link to={`/job/${job.page_link || job.job_id}`}>
                               <h4 className="font-semibold text-base text-foreground hover:text-primary transition-colors line-clamp-2 mb-2">
@@ -386,7 +397,7 @@ export default function CategoryJobs() {
                                 </div>
                                 <div>
                                   <span className="text-muted-foreground">Qualification:</span>
-                                  <p className="font-medium">{formatQualification(job.qualification || "Not Specified")}</p>
+                                  <p className="font-medium">{formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}</p>
                                 </div>
                               </div>
                               
@@ -424,7 +435,7 @@ export default function CategoryJobs() {
                             </TableRow>
                           </TableHeader>
                           <TableBody>
-                            {filteredJobs.map((job) => (
+                            {pagination.items.map((job) => (
                               <TableRow key={job.job_id} className="hover:bg-muted/30 transition-colors">
                                 <TableCell className="py-4 px-4 w-[40%]">
                                   <div className="space-y-2">
@@ -451,7 +462,7 @@ export default function CategoryJobs() {
                                 </TableCell>
                                 <TableCell className="text-center py-4 px-2">
                                   <span className="text-sm whitespace-pre-line break-words">
-                                    {formatQualification(job.qualification || "Not Specified")}
+                                    {formatQualification(getQualificationDisplay(job.qualification, job.education_tags, "Not Specified"))}
                                   </span>
                                 </TableCell>
                                 <TableCell className="text-center py-4 px-2">
@@ -481,6 +492,18 @@ export default function CategoryJobs() {
                             ))}
                           </TableBody>
                         </Table>
+                      </div>
+
+                      {/* Pagination Controls */}
+                      <div className="px-4 pb-4">
+                        <PaginationControls
+                          currentPage={pagination.currentPage}
+                          totalPages={pagination.totalPages}
+                          onPageChange={pagination.goToPage}
+                          totalItems={pagination.totalItems}
+                          startIndex={pagination.startIndex}
+                          endIndex={pagination.endIndex}
+                        />
                       </div>
                     </>
                   )}

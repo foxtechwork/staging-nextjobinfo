@@ -1,6 +1,14 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
 import type { Json } from '@/integrations/supabase/types';
+
+// Lazy import Supabase only in dev mode to prevent bundling in production
+const getSupabaseClient = async () => {
+  if (import.meta.env.PROD) {
+    throw new Error('Supabase should not be called in production SSG mode');
+  }
+  const { supabase } = await import('@/integrations/supabase/client');
+  return supabase;
+};
 
 export interface Job {
   job_id: string;
@@ -32,13 +40,27 @@ export interface Job {
 }
 
 // Helper function to combine HTML from all columns without extra spaces
+// SANITIZES HTML to remove malicious scripts and dangerous content
 export const combineJobHtml = (job: Job): string => {
   const html1 = job.raw_html_1 || '';
   const html2 = job.raw_html_2 || '';
   const html3 = job.raw_html_3 || '';
   const html4 = job.raw_html_4 || '';
   const html5 = job.raw_html_5 || '';
-  return html1 + html2 + html3 + html4 + html5;
+  
+  const combined = html1 + html2 + html3 + html4 + html5;
+  
+  // Import sanitization at runtime to avoid circular dependencies
+  // Remove all script tags, inline event handlers, and dangerous protocols
+  return combined
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '')
+    .replace(/\s*on\w+\s*=\s*[^\s>]*/gi, '')
+    .replace(/href\s*=\s*["']javascript:[^"']*["']/gi, 'href="#"')
+    .replace(/src\s*=\s*["']javascript:[^"']*["']/gi, 'src=""')
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '')
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '')
+    .replace(/<embed\b[^>]*>/gi, '');
 };
 
 export interface JobDetail {
@@ -51,42 +73,32 @@ export interface JobDetail {
 }
 
 export const useJobs = (options?: any) => {
-  const queryClient = useQueryClient();
-  const isDev = typeof import.meta.env !== 'undefined' && import.meta.env.DEV;
-  
+  const ssgJobs = typeof window !== 'undefined' && Array.isArray(window.__SSG_DATA__?.jobs) && window.__SSG_DATA__!.jobs.length > 0
+    ? window.__SSG_DATA__!.jobs 
+    : undefined;
+
   return useQuery({
     queryKey: ['jobs'],
     queryFn: async () => {
-      // Only fetch in development mode
-      if (isDev) {
-        console.warn('⚠️ [useJobs] Fetching from Supabase (DEV mode)');
-        
-        const { data, error } = await supabase
-          .from('jobs_data')
-          .select('*')
-          .eq('is_active', true)
-          .order('post_date', { ascending: false });
+      console.log('📊 useJobs: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
+      const { data, error } = await supabase
+        .from('jobs_data')
+        .select('*')
+        .eq('is_active', true)
+        .order('last_date', { ascending: false })
+        .range(0, 9999); // Override default 1000 row limit
 
-        if (error) throw error;
-        return data as Job[];
-      }
-      
-      // Production - should never reach here
-      throw new Error('Production mode should use SSG data only');
+      if (error) throw error;
+      return data as Job[];
     },
-    initialData: () => {
-      // Check cache FIRST - prevents loading state
-      const cached = queryClient.getQueryData<Job[]>(['jobs']);
-      if (cached) {
-        console.log('✅ Using SSG cached jobs data');
-      }
-      return cached;
-    },
-    enabled: isDev, // Only fetch in dev mode
+    // CRITICAL: In production, ALWAYS disabled - only use SSG data
+    enabled: import.meta.env.PROD ? false : !ssgJobs,
+    initialData: ssgJobs,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
     refetchOnReconnect: false,
     ...options,
   });
@@ -96,6 +108,8 @@ export const useJobDetails = (jobId: string) => {
   return useQuery({
     queryKey: ['job-details', jobId],
     queryFn: async () => {
+      console.log('📊 useJobDetails: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
       const { data, error } = await supabase
         .from('jobs_data')
         .select('*')
@@ -106,65 +120,69 @@ export const useJobDetails = (jobId: string) => {
       if (error) throw error;
       return data as Job;
     },
-    enabled: !!jobId,
+    // CRITICAL: Disabled in production - should use SSG data
+    enabled: import.meta.env.PROD ? false : !!jobId,
   });
 };
 
 export const useJobByPageLink = (pageLink: string, options?: any) => {
   const queryClient = useQueryClient();
-  const isDev = typeof import.meta.env !== 'undefined' && import.meta.env.DEV;
+  const isDev = !import.meta.env.PROD;
   
+  // Get preloaded job from SSG data or React Query cache
+  // NO page reloads - SSG pages now include full job data with HTML (see SSG-CLIENT-NAVIGATION-FIX-2025.md)
+  const getPreloadedJob = (): Job | undefined => {
+    if (typeof window === 'undefined') return undefined;
+    
+    // Source 1: SSG currentJob (direct page load - has full HTML)
+    if (window.__SSG_DATA__?.currentJob?.page_link === pageLink) {
+      return window.__SSG_DATA__.currentJob;
+    }
+    
+    // Source 2: SSG jobs array (client-side navigation - has full HTML since SSG fix)
+    if (window.__SSG_DATA__?.jobs) {
+      const job = window.__SSG_DATA__.jobs.find((j: Job) => j.page_link === pageLink);
+      if (job) return job;
+    }
+    
+    // Source 3: React Query cache (fallback)
+    const cachedJobs = queryClient.getQueryData<Job[]>(['jobs']);
+    if (cachedJobs) {
+      const job = cachedJobs.find((j) => j.page_link === pageLink);
+      if (job) return job;
+    }
+    
+    return undefined;
+  };
+  
+  const preloadedJob = getPreloadedJob();
+  
+  // In production: ALWAYS disabled (use SSG data only)
+  // In development: enabled only if we don't have preloaded data
+  const shouldFetch = isDev && !!pageLink && !preloadedJob;
+
   return useQuery({
     queryKey: ['job-by-page-link', pageLink],
     queryFn: async () => {
-      // Only fetch in development mode
-      if (isDev && pageLink) {
-        console.warn('⚠️ [useJobByPageLink] Fetching from Supabase (DEV mode):', pageLink);
-        
-        const { data, error } = await supabase
-          .from('jobs_data')
-          .select('*')
-          .eq('page_link', pageLink)
-          .eq('is_active', true)
-          .maybeSingle();
+      const supabase = await getSupabaseClient();
+      const { data, error } = await supabase
+        .from('jobs_data')
+        .select('*')
+        .eq('page_link', pageLink)
+        .eq('is_active', true)
+        .maybeSingle();
 
-        if (error) throw error;
-        if (!data) throw new Error('Job not found');
-        return data as Job;
-      }
-      
-      // Production - should never reach here
-      throw new Error('Production mode should use SSG data only');
+      if (error) throw error;
+      if (!data) throw new Error('Job not found');
+      return data as Job;
     },
-    initialData: () => {
-      // Prefer dedicated job detail cache if present
-      const cached = queryClient.getQueryData<Job>(['job-by-page-link', pageLink]);
-      if (cached) {
-        console.log('✅ Using SSG cached job:', pageLink);
-        return cached;
-      }
-
-      // Fallback: derive job from the pre-fetched jobs list so client-side navigation works
-      const allJobs = queryClient.getQueryData<Job[]>(['jobs']);
-      if (allJobs && pageLink) {
-        const fromList = allJobs.find((job) => job.page_link === pageLink);
-        if (fromList) {
-          console.log('✅ Derived job from SSG jobs list:', pageLink);
-          // Prime the dedicated cache for future lookups
-          queryClient.setQueryData(['job-by-page-link', pageLink], fromList);
-          return fromList;
-        }
-      }
-
-      return undefined;
-    },
-    enabled: isDev && !!pageLink, // Only fetch in dev mode
+    enabled: shouldFetch,
+    initialData: preloadedJob,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
     refetchOnReconnect: false,
-    retry: false,
     ...options,
   });
 };
@@ -173,6 +191,8 @@ export const useJobDetailsByPageLink = (pageLink: string) => {
   return useQuery({
     queryKey: ['job-details-by-page-link', pageLink],
     queryFn: async () => {
+      console.log('📊 useJobDetailsByPageLink: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
       const { data, error } = await supabase
         .from('jobs_data')
         .select('*')
@@ -183,75 +203,57 @@ export const useJobDetailsByPageLink = (pageLink: string) => {
       if (error) throw error;
       return data as Job;
     },
-    enabled: !!pageLink,
+    // CRITICAL: Disabled in production
+    enabled: import.meta.env.PROD ? false : !!pageLink,
   });
 };
 
-interface JobsStats {
-  totalJobs: number;
-  thisWeekJobs: number;
-  stateWiseJobs: Record<string, number>;
-  totalApplications: number;
-  successRate: number;
-}
-
 export const useJobsStats = () => {
-  const queryClient = useQueryClient();
-  const isDev = typeof import.meta.env !== 'undefined' && import.meta.env.DEV;
-  
-  return useQuery<JobsStats>({
+  const ssgStats = typeof window !== 'undefined' && window.__SSG_DATA__?.stats
+    ? window.__SSG_DATA__.stats
+    : undefined;
+
+  return useQuery({
     queryKey: ['jobs-stats'],
     queryFn: async () => {
-      // Only fetch in development mode
-      if (isDev) {
-        console.warn('⚠️ [useJobsStats] Fetching from Supabase (DEV mode)');
-        
-        const { data, error } = await supabase
-          .from('jobs_data')
-          .select('job_id, post_date, state, is_active')
-          .eq('is_active', true);
+      console.log('📊 useJobsStats: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
+      const { data, error } = await supabase
+        .from('jobs_data')
+        .select('job_id, post_date, state, is_active')
+        .eq('is_active', true);
 
-        if (error) throw error;
+      if (error) throw error;
 
-        const totalJobs = data.length;
-        const thisWeekJobs = data.filter(job => {
-          const postDate = new Date(job.post_date);
-          const weekAgo = new Date();
-          weekAgo.setDate(weekAgo.getDate() - 7);
-          return postDate >= weekAgo;
-        }).length;
+      const totalJobs = data.length;
+      const thisWeekJobs = data.filter(job => {
+        const postDate = new Date(job.post_date);
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return postDate >= weekAgo;
+      }).length;
 
-        const stateWiseJobs = data.reduce((acc, job) => {
-          const state = job.state || 'All India';
-          acc[state] = (acc[state] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>);
+      const stateWiseJobs = data.reduce((acc, job) => {
+        const state = job.state || 'All India';
+        acc[state] = (acc[state] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
 
-        return {
-          totalJobs,
-          thisWeekJobs,
-          stateWiseJobs,
-          totalApplications: Math.floor(totalJobs * 50 + Math.random() * 1000),
-          successRate: 87
-        };
-      }
-      
-      // Production - should never reach here
-      throw new Error('Production mode should use SSG data only');
+      return {
+        totalJobs,
+        thisWeekJobs,
+        stateWiseJobs,
+        totalApplications: Math.floor(totalJobs * 50 + Math.random() * 1000),
+        successRate: 87
+      };
     },
-    initialData: () => {
-      // Check cache FIRST - prevents loading state
-      const cached = queryClient.getQueryData<JobsStats>(['jobs-stats']);
-      if (cached) {
-        console.log('✅ Using SSG cached jobs-stats');
-      }
-      return cached;
-    },
-    enabled: isDev, // Only fetch in dev mode
+    // CRITICAL: In production, ALWAYS disabled
+    enabled: import.meta.env.PROD ? false : !ssgStats,
+    initialData: ssgStats,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
     refetchOnReconnect: false,
   });
 };
@@ -265,19 +267,50 @@ export const useJobSearch = (searchQuery: string, filters: {
   experienceTags?: string[];
   isStateSpecific?: boolean;
 }) => {
-  const { data: allJobs = [] } = useJobs();
+  // Try to get data from: 1) SSG window object, 2) base jobs query cache
+  const queryClient = useQueryClient();
+  
+  const ssgJobs = typeof window !== 'undefined' && window.__SSG_DATA__?.jobs 
+    ? window.__SSG_DATA__.jobs 
+    : undefined;
+  
+  // Fallback to base jobs query if SSG data not available (handles navigation)
+  const cachedJobs = !ssgJobs ? queryClient.getQueryData<Job[]>(['jobs']) : undefined;
+  const sourceJobs = ssgJobs || cachedJobs;
+
+  // Pre-filter data if available - this becomes initialData
+  const filteredData = sourceJobs ? applyFilters(sourceJobs, searchQuery, filters) : undefined;
 
   return useQuery({
     queryKey: ['job-search', searchQuery, filters],
-    queryFn: () => {
-      return applyFilters(allJobs as Job[], searchQuery, filters);
+    queryFn: async () => {
+      console.log('📊 useJobSearch: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
+      let query = supabase
+        .from('jobs_data')
+        .select('*')
+        .eq('is_active', true)
+        .order('last_date', { ascending: false });
+
+      // Apply state filter for state-specific pages
+      if (filters.state && filters.state !== 'All India' && filters.isStateSpecific) {
+        query = query.or(`state.eq.${filters.state},Is_All_India.eq.true`);
+      }
+
+      // Override default 1000 row limit - must be after all filters
+      const { data, error } = await query.range(0, 9999);
+      if (error) throw error;
+
+      return applyFilters(data as Job[], searchQuery, filters);
     },
-    // Enable this query when we have jobs data from the base useJobs hook
-    // During SSR, this will run the filter and cache the result
-    // On the client, it will use the cached filtered result
-    enabled: Array.isArray(allJobs) && allJobs.length > 0,
+    // CRITICAL: In production, ALWAYS disabled
+    enabled: import.meta.env.PROD ? false : !filteredData,
+    initialData: filteredData,
     staleTime: Infinity,
     gcTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   });
 };
 
@@ -416,19 +449,9 @@ function applyFilters(data: Job[], searchQuery: string, filters: any): Job[] {
           if (!aIsStateSpecific && bIsStateSpecific) return 1;
           return 0;
         });
-      } else if (filters.category !== "State Govt Jobs") {
-        // Homepage: Show ONLY All India jobs (unless searching for State Govt Jobs)
-        filteredData = filteredData.filter(job => job.Is_All_India === true);
-        
-        // Sort by post_date descending for All India jobs
-        filteredData.sort((a, b) => {
-          const dateA = new Date(a.post_date || a.updated_at).getTime();
-          const dateB = new Date(b.post_date || b.updated_at).getTime();
-          return dateB - dateA;
-        });
       } else {
-        // State Govt Jobs category: Show both state-specific AND All India jobs
-        // Sort by post_date descending
+        // Homepage and all categories: Show ALL jobs (no filtering by Is_All_India)
+        // Sort by post_date descending - most recent jobs first
         filteredData.sort((a, b) => {
           const dateA = new Date(a.post_date || a.updated_at).getTime();
           const dateB = new Date(b.post_date || b.updated_at).getTime();

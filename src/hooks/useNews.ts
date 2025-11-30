@@ -1,5 +1,13 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+// Lazy import Supabase only in dev mode to prevent bundling in production
+const getSupabaseClient = async () => {
+  if (import.meta.env.PROD) {
+    throw new Error('Supabase should not be called in production SSG mode');
+  }
+  const { supabase } = await import('@/integrations/supabase/client');
+  return supabase;
+};
 
 export interface News {
   id: string;
@@ -13,43 +21,32 @@ export interface News {
 }
 
 export const useNews = () => {
-  const queryClient = useQueryClient();
-  const isDev = typeof import.meta.env !== 'undefined' && import.meta.env.DEV;
-  
+  const ssgNews = typeof window !== 'undefined' && window.__SSG_DATA__?.news 
+    ? window.__SSG_DATA__.news 
+    : undefined;
+
   return useQuery({
     queryKey: ["news"],
     queryFn: async () => {
-      // Only fetch in development mode
-      if (isDev) {
-        console.warn('⚠️ [useNews] Fetching from Supabase (DEV mode)');
-        
-        const { data, error } = await supabase
-          .from("news")
-          .select("*")
-          .eq("is_active", true)
-          .order("updated_at", { ascending: false })
-          .limit(5);
+      console.log('📰 useNews: Fetching from Supabase (dev mode only)');
+      const supabase = await getSupabaseClient();
+      const { data, error } = await supabase
+        .from("news")
+        .select("*")
+        .eq("is_active", true)
+        .order("updated_at", { ascending: false })
+        .limit(5);
 
-        if (error) throw error;
-        return data as News[];
-      }
-      
-      // Production - should never reach here
-      throw new Error('Production mode should use SSG data only');
+      if (error) throw error;
+      return data as News[];
     },
-    initialData: () => {
-      // Check cache FIRST - prevents loading state
-      const cached = queryClient.getQueryData<News[]>(["news"]);
-      if (cached) {
-        console.log('✅ Using SSG cached news');
-      }
-      return cached;
-    },
-    enabled: isDev, // Only fetch in dev mode
+    // CRITICAL: In production, ALWAYS disabled
+    enabled: import.meta.env.PROD ? false : !ssgNews,
+    initialData: ssgNews,
     staleTime: Infinity,
     gcTime: Infinity,
-    refetchOnMount: false,
     refetchOnWindowFocus: false,
+    refetchOnMount: false,
     refetchOnReconnect: false,
   });
 };

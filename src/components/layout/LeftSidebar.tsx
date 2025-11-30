@@ -52,11 +52,7 @@ export default function LeftSidebar() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 p-3">
-          {isLoading ? (
-            Array.from({ length: 5 }).map((_, index) => (
-              <Skeleton key={index} className="h-14 w-full" />
-            ))
-          ) : news && news.length > 0 ? (
+          {news && news.length > 0 ? (
             news.map((item) => (
               <div
                 key={item.id}
@@ -79,9 +75,9 @@ export default function LeftSidebar() {
                 </div>
               </div>
             ))
-          ) : (
+          ) : !isLoading ? (
             <p className="text-xs text-muted-foreground text-center py-4">No updates available</p>
-          )}
+          ) : null}
           <Button variant="ghost" size="sm" className="w-full mt-2 text-xs hover:bg-primary/10">
             View All Updates
           </Button>

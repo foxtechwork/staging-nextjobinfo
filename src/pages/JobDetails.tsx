@@ -11,23 +11,16 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import LeftSidebar from '@/components/layout/LeftSidebar';
 import RightSidebar from '@/components/layout/RightSidebar';
-import { Suspense, memo, useEffect } from 'react';
+import { memo, useEffect } from 'react';
 import AdSenseAd from '@/components/ads/AdSenseAd';
 import { AdWrapper } from '@/components/ads/AdWrapper';
 import { ADS_CONFIG } from '@/config/ads';
 import MiniJobCard from '@/components/job/MiniJobCard';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { getQualificationDisplay } from '@/lib/qualification-fallback';
 
-// Memoized components for performance
-const LoadingSkeleton = memo(() => (
-  <div className="space-y-4">
-    <Skeleton className="h-4 w-full" />
-    <Skeleton className="h-4 w-5/6" />
-    <Skeleton className="h-4 w-4/6" />
-  </div>
-));
-
+// Memoized component for performance
 const JobDetailsContent = memo(({ htmlContent }: { htmlContent: string }) => (
   <div 
     className="job-details-raw-content"
@@ -40,14 +33,20 @@ export default function JobDetails() {
   const location = useLocation();
   const { data: currentJob, isLoading: jobLoading, error: jobError } = useJobByPageLink(pageLink!) as { data: Job | undefined; isLoading: boolean; error: any };
   const { data: relatedJobs, isLoading: relatedLoading } = useRelatedJobs(currentJob, 3);
-
   // Scroll to top instantly when navigating to this page
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   }, [location.pathname]);
+  
+  // Determine if we have enough data to render the page
+  const hasBasicInfo = currentJob && currentJob.exam_or_post_name;
 
-  // Show loading skeleton during initial load or when data is missing
-  if (jobLoading || !currentJob) {
+  // Show loading ONLY if:
+  // 1. Data is still loading AND we don't have basic info yet
+  // 2. No job data at all AND no error
+  const showLoading = (jobLoading && !hasBasicInfo) || (!currentJob && !jobError);
+
+  if (showLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
@@ -95,6 +94,52 @@ export default function JobDetails() {
     );
   }
 
+  if (jobError || !currentJob) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-1 bg-background py-8">
+          <div className="w-full">
+            <div className="flex">
+              {/* Left Margin - 2% */}
+              <div className="hidden xl:block w-[2%] flex-shrink-0"></div>
+              
+              {/* Left Sidebar - 17% */}
+              <div className="hidden lg:block w-[17%] flex-shrink-0 px-2">
+                <LeftSidebar />
+              </div>
+
+              {/* Middle Content - 62% */}
+              <div className="w-full lg:w-[62%] flex-shrink-0 px-3">
+                <Link to="/">
+                  <Button variant="outline" className="mb-6">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Jobs
+                  </Button>
+                </Link>
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <h2 className="text-2xl font-bold text-foreground mb-4">Job Not Found</h2>
+                    <p className="text-muted-foreground">The job you're looking for doesn't exist or has been removed.</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Sidebar - 17% */}
+              <div className="hidden lg:block w-[17%] flex-shrink-0 px-2">
+                <RightSidebar />
+              </div>
+              
+              {/* Right Margin - 2% */}
+              <div className="hidden xl:block w-[2%] flex-shrink-0"></div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       day: 'numeric',
@@ -111,7 +156,7 @@ export default function JobDetails() {
     const recruitmentBoard = currentJob.recruitment_board || 'Government';
     const state = currentJob.state || 'All India';
     const totalVacancies = currentJob.total_posts || 'Multiple';
-    const qualification = currentJob.qualification || 'Various';
+    const qualification = getQualificationDisplay(currentJob.qualification, currentJob.education_tags, 'Various');
     const jobCategory = (Array.isArray(currentJob.job_area_tags) && currentJob.job_area_tags.length > 0) 
       ? currentJob.job_area_tags[0] 
       : 'Government';
@@ -241,6 +286,15 @@ export default function JobDetails() {
             }
           })}
         </script>
+        {/* Inject SSG data for client hydration without DB calls */}
+        <script
+          // We intentionally write to window here so HydrateData can read it on the client
+          dangerouslySetInnerHTML={{
+            __html: `window.__SSG_DATA__ = Object.assign({}, window.__SSG_DATA__ || {}, { currentJob: ${JSON.stringify(
+              currentJob
+            )} });`,
+          }}
+        />
       </Helmet>
     );
   };
@@ -262,16 +316,17 @@ export default function JobDetails() {
 
             {/* Middle Content - 62% */}
             <div className="w-full lg:w-[62%] flex-shrink-0 px-2 sm:px-3">
-              {/* Back Button */}
-              <Link to="/">
-                <Button variant="outline" className="mb-4 md:mb-6 animate-fade-in mobile-padding">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
-                  Back to Jobs
-                </Button>
-              </Link>
+              <div className="animate-fade-in">
+                {/* Back Button */}
+                <Link to="/">
+                  <Button variant="outline" className="mb-4 md:mb-6 mobile-padding">
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Jobs
+                  </Button>
+                </Link>
 
-              {/* Ad Placeholder - Top */}
-              <div className="mb-4 md:mb-6 animate-fade-in">
+                {/* Ad Placeholder - Top */}
+                <div className="mb-4 md:mb-6">
                 <AdWrapper>
                   <AdSenseAd
                     client={ADS_CONFIG.ADSENSE_CLIENT_ID}
@@ -283,8 +338,8 @@ export default function JobDetails() {
                 </AdWrapper>
               </div>
 
-              {/* Job Title Section - Clean Simple Design */}
-              <div className="mb-6 animate-fade-in">
+                {/* Job Title Section - Clean Simple Design */}
+                <div className="mb-6">
                 <div className="text-center py-4">
                   <h1 className="text-2xl sm:text-3xl md:text-4xl font-inter font-bold text-foreground leading-tight">
                     {currentJob.exam_or_post_name}
@@ -292,34 +347,30 @@ export default function JobDetails() {
                 </div>
               </div>
 
-              {/* Job Info Cards Grid - 3 cards per row, 2 rows */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 animate-fade-in max-w-[1200px] mx-auto">
+                {/* Job Info Cards Grid - 3 cards per row, 2 rows */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 max-w-[1200px] mx-auto">
                 {/* First Row */}
-                {currentJob.recruitment_board && (
-                  <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Recruitment Board
-                      </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground break-words">
-                        {currentJob.recruitment_board}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Recruitment Board
+                    </div>
+                    <div className="text-lg md:text-xl font-bold text-foreground break-words">
+                      {currentJob.recruitment_board || "Check Official Notification"}
+                    </div>
+                  </CardContent>
+                </Card>
                 
-                {currentJob.state && (
-                  <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        State
-                      </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground">
-                        {currentJob.state}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      State
+                    </div>
+                    <div className="text-lg md:text-xl font-bold text-foreground">
+                      {currentJob.state || "All India"}
+                    </div>
+                  </CardContent>
+                </Card>
                 
                 <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
                   <CardContent className="p-4 md:p-6 text-center">
@@ -333,70 +384,75 @@ export default function JobDetails() {
                 </Card>
                 
                 {/* Second Row */}
-                {currentJob.qualification && (
-                  <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Qualification Required
-                      </div>
-                      {/* Mobile: Full text */}
-                      <div className="text-lg md:text-xl font-bold text-foreground break-words md:hidden">
-                        {currentJob.qualification}
-                      </div>
-                      {/* Desktop: Truncated to 100 chars if needed */}
-                      <div className="hidden md:block text-lg md:text-xl font-bold text-foreground break-words">
-                        {currentJob.qualification.length > 100 
-                          ? `${currentJob.qualification.substring(0, 100)} and more...`
-                          : currentJob.qualification
-                        }
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Qualification Required
+                    </div>
+                    {(() => {
+                      const qualificationText = getQualificationDisplay(
+                        currentJob.qualification, 
+                        currentJob.education_tags,
+                        "Check Official Notification"
+                      );
+                      return (
+                        <>
+                          {/* Mobile: Full text */}
+                          <div className="text-lg md:text-xl font-bold text-foreground break-words md:hidden">
+                            {qualificationText}
+                          </div>
+                          {/* Desktop: Truncated to 100 chars if needed */}
+                          <div className="hidden md:block text-lg md:text-xl font-bold text-foreground break-words">
+                            {qualificationText.length > 100 
+                              ? `${qualificationText.substring(0, 100)} and more...`
+                              : qualificationText
+                            }
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </CardContent>
+                </Card>
 
-                {(Array.isArray(currentJob.job_area_tags) && currentJob.job_area_tags.length > 0) && (
-                  <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Job Category
-                      </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground break-words">
-                        {String(currentJob.job_area_tags[0])}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Job Category
+                    </div>
+                    <div className="text-lg md:text-xl font-bold text-foreground break-words">
+                      {(Array.isArray(currentJob.job_type_tags) && currentJob.job_type_tags.length > 0) 
+                        ? String(currentJob.job_type_tags[0]) 
+                        : "Government Job"}
+                    </div>
+                  </CardContent>
+                </Card>
                 
-                {currentJob.last_date && (
-                  <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
-                    <CardContent className="p-4 md:p-6 text-center">
-                      <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                        Last Date to Apply
-                      </div>
-                      <div className="text-lg md:text-xl font-bold text-foreground">
-                        {formatDate(currentJob.last_date)}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                <Card className="border-l-4 border-l-purple-600 hover:-translate-y-2 transition-all duration-200 shadow-md hover:shadow-xl bg-[#f8f9fa]">
+                  <CardContent className="p-4 md:p-6 text-center">
+                    <div className="text-xs md:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                      Last Date to Apply
+                    </div>
+                    <div className="text-lg md:text-xl font-bold text-foreground">
+                      {currentJob.last_date ? formatDate(currentJob.last_date) : "Check Official Notification"}
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
 
-              {/* Job Details Content - Raw HTML Display */}
-              {(currentJob.raw_html_1 || currentJob.raw_html_2 || currentJob.raw_html_3) && (
-                <div className="mb-6 animate-fade-in job-details-raw-wrapper">
+                {/* Job Details Content - Raw HTML Display */}
+                {(currentJob.raw_html_1 || currentJob.raw_html_2 || currentJob.raw_html_3) ? (
+                  <div className="mb-6 job-details-raw-wrapper">
                   <Card className="md:shadow-card overflow-hidden border-0 md:border shadow-none">
                     <CardContent className="p-0">
-                      <Suspense fallback={<LoadingSkeleton />}>
-                        <JobDetailsContent htmlContent={combineJobHtml(currentJob)} />
-                      </Suspense>
+                      <JobDetailsContent htmlContent={combineJobHtml(currentJob)} />
                     </CardContent>
                   </Card>
                 </div>
-              )}
+              ) : null}
 
-              {/* Job Tags Section */}
-              {(currentJob.education_tags || currentJob.job_type_tags || currentJob.experience_level_tags || currentJob.post_position_tags || currentJob.job_posting_deadline_tags) && (
-                <div className="mb-6 animate-fade-in">
+                {/* Job Tags Section */}
+                {(currentJob.education_tags || currentJob.job_type_tags || currentJob.experience_level_tags || currentJob.post_position_tags || currentJob.job_posting_deadline_tags) && (
+                  <div className="mb-6">
                   <Card className="border-l-4 border-l-primary shadow-sm">
                     <CardContent className="p-4 md:p-6">
                       <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
@@ -425,9 +481,9 @@ export default function JobDetails() {
                 </div>
               )}
 
-              {/* Related Jobs Section - Compact Carousel */}
-              {relatedJobs && relatedJobs.length > 0 && (
-                <div className="mb-6 animate-fade-in">
+                {/* Related Jobs Section - Compact Carousel */}
+                {relatedJobs && relatedJobs.length > 0 && (
+                  <div className="mb-6">
                   <h2 className="text-lg md:text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Building className="h-5 w-5 text-accent" />
                     Related Jobs {currentJob.Is_All_India ? '(All India)' : currentJob.state ? `(${currentJob.state})` : ''}
@@ -467,8 +523,8 @@ export default function JobDetails() {
                 </div>
               )}
 
-              {/* Action Buttons */}
-              <div className="flex justify-center animate-fade-in mb-4 md:mb-6">
+                {/* Action Buttons */}
+                <div className="flex justify-center mb-4 md:mb-6">
                 <Button variant="outline" className="hover-scale px-8" asChild>
                   <Link to="/">
                     View More Jobs
@@ -476,17 +532,18 @@ export default function JobDetails() {
                 </Button>
               </div>
 
-              {/* Bottom Ad Placeholder */}
-              <div className="animate-fade-in">
-                <AdWrapper>
-                  <AdSenseAd
-                    client={ADS_CONFIG.ADSENSE_CLIENT_ID}
-                    slot={ADS_CONFIG.AD_SLOTS.JOB_FOOTER}
-                    format="auto"
-                    style={{ display: 'block', minHeight: '90px' }}
-                    responsive={true}
-                  />
-                </AdWrapper>
+                {/* Bottom Ad Placeholder */}
+                <div>
+                  <AdWrapper>
+                    <AdSenseAd
+                      client={ADS_CONFIG.ADSENSE_CLIENT_ID}
+                      slot={ADS_CONFIG.AD_SLOTS.JOB_FOOTER}
+                      format="auto"
+                      style={{ display: 'block', minHeight: '90px' }}
+                      responsive={true}
+                    />
+                  </AdWrapper>
+                </div>
               </div>
             </div>
 

@@ -1,21 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import * as fs from 'fs';
 import * as path from 'path';
-import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '../src/config/supabase';
-
-// Use environment variables if available, otherwise use centralized config
-const SUPABASE_API_URL = process.env.VITE_SUPABASE_URL || SUPABASE_URL;
-const SUPABASE_API_KEY = process.env.VITE_SUPABASE_PUBLISHABLE_KEY || SUPABASE_PUBLISHABLE_KEY;
-
-// Create Supabase client for route generation (no auth needed)
-const supabase = createClient(SUPABASE_API_URL, SUPABASE_API_KEY, {
-  auth: {
-    persistSession: false,
-    autoRefreshToken: false,
-    detectSessionInUrl: false,
-    storageKey: 'routes-gen-supabase-auth', // Unique storage key
-  }
-});
 
 const stateNames: Record<string, string> = {
   "ap": "Andhra Pradesh",
@@ -69,7 +53,8 @@ const categoryMapping: Record<string, string> = {
   "law": "Law"
 };
 
-// 🧪 TESTING MODE: Comment out the line below to generate ALL job routes
+// 🚀 PRODUCTION MODE: Generate ALL job routes
+// Uncomment the line below to enable testing mode with limited routes
 // const TESTING_LIMIT = 10;
 
 async function generateRoutes() {
@@ -111,37 +96,38 @@ async function generateRoutes() {
     routes.push(`/category/${category}`);
   });
 
-  // Fetch all job page links from database
-  console.log('💼 Fetching job routes from database...');
+  // Load job routes from cached data (no database calls!)
+  console.log('💼 Loading job routes from cached data...');
   try {
-    let query = supabase
-      .from('jobs_data')
-      .select('page_link')
-      .eq('is_active', true)
-      .not('page_link', 'is', null);
+    const dataPath = path.join(process.cwd(), 'ssg-data.json');
     
-    // Apply limit only if TESTING_LIMIT is defined
+    if (!fs.existsSync(dataPath)) {
+      console.error('❌ ssg-data.json not found. Run npm run fetch-data first.');
+      process.exit(1);
+    }
+    
+    const cachedData = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+    const jobs = cachedData.jobs || [];
+    
+    console.log(`✅ Found ${jobs.length} job listings in cached data`);
+    
+    // Apply TESTING_LIMIT if defined
+    const limitedJobs = typeof TESTING_LIMIT !== 'undefined' ? jobs.slice(0, TESTING_LIMIT) : jobs;
+    
     if (typeof TESTING_LIMIT !== 'undefined') {
-      query = query.limit(TESTING_LIMIT);
-      console.log(`⚠️  TESTING MODE: Limited to ${TESTING_LIMIT} job routes`);
+      console.log(`⚠️ TESTING MODE: Limiting to ${TESTING_LIMIT} jobs`);
     }
     
-    const { data: jobs, error } = await query;
-
-    if (error) {
-      console.error('❌ Error fetching jobs:', error);
-    } else if (jobs && jobs.length > 0) {
-      console.log(`✅ Found ${jobs.length} job listings`);
-      jobs.forEach(job => {
-        if (job.page_link) {
-          // Extract the job identifier from the page_link
-          const jobId = job.page_link.split('/').pop() || job.page_link;
-          routes.push(`/job/${encodeURIComponent(jobId)}`);
-        }
-      });
-    }
+    limitedJobs.forEach((job: any) => {
+      if (job.page_link && job.is_active) {
+        // Extract the job identifier from the page_link
+        const jobId = job.page_link.split('/').pop() || job.page_link;
+        routes.push(`/job/${encodeURIComponent(jobId)}`);
+      }
+    });
   } catch (error) {
-    console.error('❌ Error fetching job data:', error);
+    console.error('❌ Error loading cached job data:', error);
+    process.exit(1);
   }
 
 

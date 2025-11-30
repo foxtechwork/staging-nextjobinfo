@@ -14,7 +14,8 @@
     "build:client": "vite build --outDir dist/client",
     "build:server": "vite build --ssr src/ssg/entry-server.tsx --outDir dist/server",
     "prerender": "tsx scripts/prerender.ts",
-    "build:ssg": "npm run generate-routes && npm run build:client && npm run build:server && npm run prerender && npm run generate-sitemap",
+    "fetch-data": "tsx scripts/fetch-data.ts",
+    "build:ssg": "npm run fetch-data && npm run generate-routes && npm run build:client && npm run build:server && npm run prerender && npm run generate-sitemap",
     "serve:ssg": "npx serve dist/client"
   },
   "dependencies": {
@@ -54,7 +55,6 @@
     "date-fns": "^3.6.0",
     "embla-carousel-autoplay": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
-    "html-minifier-terser": "^7.2.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
     "next-themes": "^0.3.0",

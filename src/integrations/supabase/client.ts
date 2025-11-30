@@ -18,38 +18,14 @@ const storage = typeof window !== 'undefined'
       removeItem: () => {},
     };
 
-// Detect environment
-const isBrowser = typeof window !== 'undefined';
-const isDev = typeof import.meta.env !== 'undefined' ? import.meta.env.DEV : false;
-const isBuildTime = !isBrowser; // Node.js scripts during build
-const isValidConfig = SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY;
-
-// Create appropriate client:
-// - Build time (Node.js): Real client for data fetching
-// - Browser dev mode: Real client for live queries
-// - Browser production: Dummy client (uses SSG cache only)
-export const supabase = (isBuildTime || isDev) && isValidConfig
-  ? createClient<Database>(
-      SUPABASE_URL, 
-      SUPABASE_PUBLISHABLE_KEY, 
-      {
-        auth: {
-          storage: storage as any,
-          persistSession: typeof window !== 'undefined',
-          autoRefreshToken: typeof window !== 'undefined',
-        }
-      }
-    )
-  : ({
-      // Dummy client for browser production builds
-      from: () => ({
-        select: () => Promise.reject(new Error('Supabase not available in production SSG')),
-        insert: () => Promise.reject(new Error('Supabase not available in production SSG')),
-        update: () => Promise.reject(new Error('Supabase not available in production SSG')),
-        delete: () => Promise.reject(new Error('Supabase not available in production SSG')),
-      }),
-      auth: {
-        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
-        signIn: () => Promise.reject(new Error('Auth not available in production SSG')),
-      }
-    } as any);
+export const supabase = createClient<Database>(
+  SUPABASE_URL, 
+  SUPABASE_PUBLISHABLE_KEY, 
+  {
+    auth: {
+      storage: storage as any,
+      persistSession: typeof window !== 'undefined',
+      autoRefreshToken: typeof window !== 'undefined',
+    }
+  }
+);

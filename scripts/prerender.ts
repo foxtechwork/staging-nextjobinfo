@@ -1,10 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-import { minifyHTML } from '../src/ssg/minify-html.js';
-import { generateContentHash, loadHashManifest, saveHashManifest, hasContentChanged } from '../src/ssg/content-hash.js';
-import { validateJobForSSG, SSGValidationError } from '../src/ssg/validators.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -126,7 +122,7 @@ function getRouteOutputPath(route: string): string {
 // SSG persistent cache to survive client rebuilds (which wipes dist/client)
 const CACHE_DIR = path.resolve(process.cwd(), 'dist/ssg-cache');
 // Bump this version when head/helmet injection logic changes to force a one-time full rebuild
-const CACHE_VERSION = 'v6-dynamic-meta-helmet-2025-11-18';
+const CACHE_VERSION = 'v11-unlimited-all-jobs-2025-11-27';
 const VERSION_FILE = path.resolve(CACHE_DIR, 'version.json');
 
 function getCacheOutputPath(route: string): string {
@@ -281,6 +277,7 @@ function deleteOrphanedPages(orphanedRoutes: string[], log: BuildLog) {
 
 async function prerender() {
   const startTime = Date.now();
+  let lastBatchTime = startTime;
   console.log('🚀 Starting incremental SSG prerendering...\n');
   
   // Initialize build log
@@ -292,10 +289,6 @@ async function prerender() {
     deleted: [],
     errors: []
   };
-  
-  // Load hash manifest for content-based incremental builds
-  const hashManifest = loadHashManifest();
-  console.log(`📋 Loaded hash manifest with ${Object.keys(hashManifest.hashes).length} entries`);
   
   // Load routes
   const routesPath = path.resolve(process.cwd(), 'static-routes.json');
@@ -374,10 +367,24 @@ console.log(`📦 Found ${existingPages.size} existing cached pages${forceRegen 
     const { render } = await import('../dist/server/entry-server.js');
     
     // Render routes in parallel batches for faster generation
-    const BATCH_SIZE = 10; // Process 10 pages at a time
+    const BATCH_SIZE = 10; // Process 100 pages at a time for maximum speed
     for (let i = 0; i < routesToGenerate.length; i += BATCH_SIZE) {
       const batch = routesToGenerate.slice(i, i + BATCH_SIZE);
-      console.log(`🔨 Rendering batch ${Math.floor(i / BATCH_SIZE) + 1}/${Math.ceil(routesToGenerate.length / BATCH_SIZE)} (${batch.length} pages)...`);
+      const batchNum = Math.floor(i / BATCH_SIZE) + 1;
+      const totalBatches = Math.ceil(routesToGenerate.length / BATCH_SIZE);
+      const progress = ((i / routesToGenerate.length) * 100).toFixed(1);
+      
+      // Calculate ETA
+      const now = Date.now();
+      const elapsed = (now - startTime) / 1000;
+      const batchesCompleted = i / BATCH_SIZE;
+      const avgTimePerBatch = batchesCompleted > 0 ? elapsed / batchesCompleted : 0;
+      const remainingBatches = totalBatches - batchNum;
+      const eta = remainingBatches * avgTimePerBatch;
+      const etaMin = Math.floor(eta / 60);
+      const etaSec = Math.floor(eta % 60);
+      
+      console.log(`🔨 Batch ${batchNum}/${totalBatches} (${progress}% complete, ${batch.length} pages) ETA: ${etaMin}m ${etaSec}s`);
       
       await Promise.all(batch.map(async (route) => {
         try {
@@ -391,59 +398,22 @@ console.log(`📦 Found ${existingPages.size} existing cached pages${forceRegen 
             hash: routeUrl.hash,
           } as any;
 
-          // Render the route (this also fetches and validates data)
-          const { html, helmet, dehydratedState, data: pageData } = await render(route);
-          
-          // Generate content hash for incremental builds
-          const contentHash = generateContentHash(pageData);
-          
-          // Check if content changed since last build
-          if (!hasContentChanged(route, contentHash, hashManifest) && existingPages.has(route)) {
-            buildLog.skipped.push(route);
-            return; // Skip unchanged pages
-          }
-          
-          // Validate job data before rendering (if applicable)
-          if (pageData?.currentJob) {
-            try {
-              validateJobForSSG(pageData.currentJob, route);
-            } catch (validationError: any) {
-              if (validationError instanceof SSGValidationError) {
-                console.error(`\n❌❌❌ SSG VALIDATION FAILED ❌❌❌`);
-                console.error(`Route: ${route}`);
-                console.error(`Field: ${validationError.field}`);
-                console.error(`Context: ${validationError.context}`);
-                throw validationError;
-              }
-            }
-          }
+          // Render the route
+          const { html, helmet, data } = await render(route);
         
-          // Generate debug metadata
-          const debugMetadata = {
-            route,
-            generatedAt: new Date().toISOString(),
-            dehydratedStateSize: JSON.stringify(dehydratedState).length,
-            queriesCount: dehydratedState.queries?.length || 0,
-            buildVersion: process.env.BUILD_VERSION || 'ssg-1.0',
-            contentHash: contentHash,
-          };
+          // Create data injection script with proper escaping to prevent data leakage
+          // Escape the JSON to prevent breaking out of script tag
+          const jsonData = JSON.stringify(data)
+            .replace(/</g, '\\u003c')
+            .replace(/>/g, '\\u003e')
+            .replace(/&/g, '\\u0026');
+          const dataScript = `<script type="application/json" id="__SSG_DATA__">${jsonData}</script><script>window.__SSG_DATA__=JSON.parse(document.getElementById('__SSG_DATA__').textContent);</script>`;
           
-          const debugScript = `<script>window.__SSG_DEBUG__=${JSON.stringify(debugMetadata)};</script>`;
-          
-          // Create React Query dehydrated state injection script
-          const dehydratedStateScript = `<script>window.__REACT_QUERY_STATE__=${JSON.stringify(dehydratedState)};</script>`;
-          
-          // Inject rendered HTML, Helmet tags, dehydrated state, and debug info
+          // Inject rendered HTML, Helmet tags, and data
           const base = cleanDefaultMeta(template);
           let finalHtml = base
-            .replace('<!--app-head-->', (helmet.title || '') + (helmet.meta || '') + (helmet.link || '') + (helmet.script || '') + dehydratedStateScript + debugScript)
+            .replace('<!--app-head-->', (helmet.title || '') + (helmet.meta || '') + (helmet.link || '') + (helmet.script || '') + dataScript)
             .replace('<!--app-html-->', html);
-          
-          // Minify HTML for production
-          finalHtml = await minifyHTML(finalHtml);
-          
-          // Update hash manifest
-          hashManifest.hashes[route] = contentHash;
           
           // Save to cache first
           saveToCache(route, finalHtml);
@@ -476,39 +446,11 @@ console.log(`📦 Found ${existingPages.size} existing cached pages${forceRegen 
     }
   }
   
-  // Save hash manifest
-  saveHashManifest(hashManifest);
-  console.log(`\n💾 Saved hash manifest with ${Object.keys(hashManifest.hashes).length} entries`);
-  
   // Save build log
   const logPath = path.resolve(process.cwd(), 'ssg-build.log.json');
   fs.writeFileSync(logPath, JSON.stringify(buildLog, null, 2));
   
   const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-  
-  // Generate SSG integrity manifest
-  const manifest = {
-    buildId: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
-    pagesGenerated: buildLog.generated.length,
-    pagesSkipped: buildLog.skipped.length,
-    pagesDeleted: buildLog.deleted.length,
-    totalPages: buildLog.totalRoutes,
-    errors: buildLog.errors,
-    performance: {
-      buildDuration: `${duration}s`,
-      avgTimePerPage: buildLog.generated.length > 0 
-        ? `${(parseFloat(duration) / buildLog.generated.length).toFixed(3)}s` 
-        : '0s',
-    },
-    version: '1.0.0',
-  };
-  
-  fs.writeFileSync(
-    path.resolve(process.cwd(), 'dist/client/ssg-manifest.json'),
-    JSON.stringify(manifest, null, 2)
-  );
-  console.log(`\n📋 Generated SSG integrity manifest`);
   
   // Summary
   console.log('\n' + '='.repeat(60));
@@ -537,6 +479,16 @@ console.log(`📦 Found ${existingPages.size} existing cached pages${forceRegen 
     ensureDir(CACHE_DIR);
     fs.writeFileSync(VERSION_FILE, JSON.stringify({ version: CACHE_VERSION }));
   } catch {}
+  
+  console.log('🗜️  Compressing HTML files...\n');
+  
+  // Run compression script
+  try {
+    const { execSync } = await import('child_process');
+    execSync('npx tsx scripts/compress-output.ts', { stdio: 'inherit' });
+  } catch (error) {
+    console.error('⚠️  Compression failed, but build completed:', error);
+  }
   
   // Exit successfully
   process.exit(0);
